@@ -1,1 +1,1 @@
-# teach-together
+# teach together
