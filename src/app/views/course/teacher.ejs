@@ -1,0 +1,67 @@
+<%-include('partial/head')%>
+<%-include('partial/navbar')%>
+
+<head>
+    <script src="/static/ace-builds/src/ace.js"></script>
+    <script src="/static/client.js"></script>
+</head>
+
+<div class="container-fluid">
+    <div class="full-editor" id="fullEditor">
+        <div class="editor-options">
+            <ul class="sidenav-simple h-auto" id="teacherIDEActions">
+                <%# <li>
+                    <a href="javascript:$('#teacherIDEActions').toggleClass('sidenav-simple-expand-fs')">
+                        <span class="mif-apps icon"></span>
+                        <span class="title">Collapse</span>
+                    </a>
+                </li>%>
+                <li>
+                    <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run">
+                        <span class="mif-play icon"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" title="Fork">
+                        <span class="mif-flow-branch icon"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" title="Project Structure">
+                        <span class="mif-folder2 icon"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" title="Project Settings">
+                        <span class="mif-cog icon"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:toggleConsole()" title="Toggle Console">
+                        <span class="mif-embed icon"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="editor" id="teacherIDE"></div>
+        <pre class="console" id="teacherConsole"></pre>
+    </div>
+</div>
+
+<script>
+let aceEditor;
+$(document).ready(() => {
+    aceEditor = ace.edit($("#teacherIDE").get(0), {
+        mode: "ace/mode/javascript",
+        selectionStyle: "text",
+        theme: "<%= parameters.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
+        showPrintMargin: false,
+    })
+});
+
+function toggleConsole() {
+    $("#teacherConsole").toggle();
+    $("#fullEditor").toggleClass("full-editor");
+    $("#fullEditor").toggleClass("full-editor-no-console");
+}
+</script>

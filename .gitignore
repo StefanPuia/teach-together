@@ -65,3 +65,4 @@ typings/
 src/app/config/custom.config.ts
 .vscode/
 app/framework/
+spawner/

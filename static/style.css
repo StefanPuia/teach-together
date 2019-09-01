@@ -1,0 +1,72 @@
+:root {
+    --appbar-height: 52px;
+}
+
+.container,
+.container-fluid {
+    margin-top: var(--appbar-height);
+}
+
+.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.app-bar .app-bar-menu.app-bar-menu-right.collapsed {
+    position: fixed;
+    right: 0;
+}
+
+#spinner {
+    position: fixed;
+    z-index: 3000;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    display: none;
+    opacity: 0.9;
+    justify-content: center;
+    align-items: center;
+}
+
+#spinner img {
+    width: 60px;
+    height: 60px;
+}
+
+.full-editor {
+    display: grid;
+    width: 100vw;
+    height: calc(100vh - var(--appbar-height));
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 30vh;
+    grid-template-areas: "editor-options editor"
+                         "console console";
+}
+
+.full-editor-no-console {
+    display: grid;
+    width: 100vw;
+    height: calc(100vh - var(--appbar-height));
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "editor-options editor";
+}
+
+.editor-options {
+    grid-area: editor-options;
+}
+
+.editor {
+    font-size: 16px;
+    grid-area: editor;
+}
+
+.console {
+    border-top: 2px solid black;
+    grid-area: console;
+    font-family: monospace;
+    padding: 5px 20px;
+    margin: 0;
+    white-space: pre-wrap;
+}
