@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
 import DatabaseUtil from '../../framework/utils/database.util';
 import Screen from '../../framework/core/screen';
-import BaseUtil from '../utils/base.util';
 
 const router: Router = Router();
 
-router.get('/', BaseUtil.addUserPref, (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
     Screen.create('main/index', req, res).appendContext({
         test: 1,
         url: req.url

@@ -4,6 +4,37 @@ export class Course extends GenericValue {
     protected primaryKeyField: string = 'course_id';
     protected data?: courseData;
 
+    public static readonly definition: EntityDefinition = {
+        "name": "course",
+        "fields": [{
+            "name": "course_id",
+            "type": "varchar(8)",
+            "notNull": true,
+            "unique": true
+        }, {
+            "name": "name",
+            "type": "varchar(255)",
+            "notNull": true
+        }, {
+            "name": "description",
+            "type": "varchar(1000)"
+        }, {
+            "name": "created_by",
+            "type": "varchar(45)",
+            "notNull": true
+        }],
+        "foreignKeys": [{
+            "name": "course_created_by_user",
+            "field": "created_by",
+            "reference": {
+                "field": "username",
+                "table": "user"
+            },
+            "onDelete": "cascade",
+            "onUpdate": "cascade"
+        }]
+    };
+
     public find(id: string): Promise<Course> {
         return this.doSelect(id);
     }

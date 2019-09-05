@@ -1,5 +1,7 @@
-import cookieParser from 'cookie-parser';
+import * as express from 'express';
 import session from 'express-session';
+import expressWs from 'express-ws';
+import cookieParser from 'cookie-parser';
 const MySQLStore = require('connect-mysql')(session);
 
 import app from '../../framework/core/app';
@@ -10,9 +12,8 @@ import mainController from '../controllers/main.controller';
 import courseController from '../controllers/course.controller';
 import apiController from '../controllers/api.controller';
 import websocketcontroller from '../controllers/websocket.controller';
-import expressWs from 'express-ws';
-import * as express from 'express';
 import SecurityUtil from '../utils/security.util';
+import BaseUtil from '../utils/base.util';
 
 app.use(cookieParser());
 app.use(session({
@@ -30,8 +31,8 @@ app.set('views', [BaseConfig.viewsLocation, BaseConfig.viewsLocation]);
 app.use('/static', express.static(BaseConfig.staticLocation));
 
 app.use('/', loginController);
-app.use('/', SecurityUtil.ensureLogin, mainController);
-app.use('/course', SecurityUtil.ensureLogin, courseController);
-app.use('/api', SecurityUtil.ensureLogin, apiController);
+app.use('/', SecurityUtil.ensureLogin, BaseUtil.addUserPref, mainController);
+app.use('/course', SecurityUtil.ensureLogin, BaseUtil.addUserPref, courseController);
+app.use('/api', SecurityUtil.ensureLogin, BaseUtil.addUserPref, apiController);
 
 export default app;

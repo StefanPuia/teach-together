@@ -40,9 +40,6 @@
     width: 100vw;
     height: calc(100vh - var(--appbar-height));
     grid-template-columns: auto 1fr;
-    grid-template-rows: auto 30vh;
-    grid-template-areas: "editor-options editor"
-                         "console console";
 }
 
 .full-editor-no-console {
@@ -50,23 +47,22 @@
     width: 100vw;
     height: calc(100vh - var(--appbar-height));
     grid-template-columns: auto 1fr;
-    grid-template-areas: "editor-options editor";
 }
 
-.editor-options {
-    grid-area: editor-options;
-}
 
 .editor {
     font-size: 16px;
-    grid-area: editor;
+    display: block;
+    height: 100%;
+    width: 100%;
 }
 
 .console {
-    border-top: 2px solid black;
-    grid-area: console;
     font-family: monospace;
     padding: 5px 20px;
     margin: 0;
     white-space: pre-wrap;
+    display: block;
+    height: 100%;
+    width: 100%;
 }

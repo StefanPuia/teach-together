@@ -4,6 +4,20 @@ export class User extends GenericValue {
     protected primaryKeyField: string = 'username';
     protected data?: userData;
 
+    public static readonly definition: EntityDefinition = {
+        "name": "user",
+        "fields": [{
+            "name": "username",
+            "type": "varchar(45)",
+            "primaryKey": true,
+            "notNull": true,
+            "unique": true
+        }, {
+            "name": "password",
+            "type": "varchar(256)"
+        }]
+    };
+
     public find(id: string): Promise<User> {
         return this.doSelect(id);
     }

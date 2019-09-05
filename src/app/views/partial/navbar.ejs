@@ -12,12 +12,11 @@
 
     <ul class="app-bar-menu app-bar-menu-right">
         <li>
-            <a href="#" class="dropdown-toggle">Stephano2013</a>
+            <a href="#" class="dropdown-toggle"><%=session.user.data.username%></a>
             <ul class="d-menu" data-role="dropdown">
-                <li><a href="#">Windows 10</a></li>
-                <li><a href="#">Office 365</a></li>
+                <li><a href="/user/settings"><span class="mif-user icon"></span> User settings</a></li>
                 <li class="divider bg-lightGray"></li>
-                <li><a href="#">Skype</a></li>
+                <li><a href="/logout"><span class="mif-exit icon"></span> Log out</a></li>
             </ul>
         </li>
     </ul>

@@ -36,15 +36,16 @@
                         <span class="mif-cog icon"></span>
                     </a>
                 </li>
-                <li>
-                    <a href="javascript:toggleConsole()" title="Toggle Console">
-                        <span class="mif-embed icon"></span>
-                    </a>
-                </li>
             </ul>
         </div>
-        <div class="editor" id="teacherIDE"></div>
-        <pre class="console" id="teacherConsole"></pre>
+        <div data-role="splitter" class="h-100" data-split-mode="vertical" data-gutter-size="5" data-min-sizes="200" data-split-sizes="70, 30">
+            <div class="d-flex flex-justify-center flex-align-center">
+                <div class="editor" id="teacherIDE"></div>
+            </div>
+            <div class="d-flex flex-justify-center flex-align-center">
+                <pre class="console" id="teacherConsole"></pre>
+            </div>
+        </div>
     </div>
 </div>
 

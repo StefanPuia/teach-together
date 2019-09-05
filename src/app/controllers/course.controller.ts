@@ -5,7 +5,7 @@ import BaseUtil from '../utils/base.util';
 
 const router: Router = Router();
 
-router.get('/:courseId', BaseUtil.addUserPref, (req: CourseRequest, res: Response) => {
+router.get('/:courseId', (req: Request, res: Response) => {
     Promise.all([
         new User().findAll()
     ]).then((values) => {
@@ -18,7 +18,3 @@ router.get('/:courseId', BaseUtil.addUserPref, (req: CourseRequest, res: Respons
 })
 
 export default router;
-
-export interface CourseRequest extends Request {
-    params: GenericObject
-}

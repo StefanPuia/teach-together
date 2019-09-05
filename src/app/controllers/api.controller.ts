@@ -4,7 +4,7 @@ import Executor from '../core/executor';
 
 const router: Router = Router();
 
-router.post('/execute/:courseId', BaseUtil.addUserPref, (req: Request, res: Response) => {
+router.post('/execute/:courseId', (req: Request, res: Response) => {
     Executor.executeJavaScript(req, res);
 })
 
