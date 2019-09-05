@@ -1,7 +1,8 @@
 import { GenericValue } from '../../../framework/core/entity/generic.value';
 export class Course extends GenericValue {
-    protected entity: string = 'course';
-    protected primaryKeyField: string = 'course_id';
+    public static readonly entity: string = 'course';
+    protected readonly entity: string = Course.entity;
+    protected readonly primaryKeyField: string = 'course_id';
     protected data?: courseData;
 
     public static readonly definition: EntityDefinition = {
@@ -39,8 +40,8 @@ export class Course extends GenericValue {
         return this.doSelect(id);
     }
 
-    public findAll(condition: string = "", inserts: any[] = []): Promise<Course[]> {
-        return this.doSelectAll(condition, inserts);
+    public static findAll(condition: string = "", inserts: any[] = []): Promise<Course[]> {
+        return Course.doSelectAll(Course.entity, condition, inserts);
     }
 
     public get courseId(): string {

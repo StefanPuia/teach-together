@@ -7,7 +7,7 @@ export default abstract class SecurityUtil extends FrameworkSecurityUtil {
         if (req.session && req.session.user) {
             next();
         } else {
-            res.redirect(403, "/login");
+            res.redirect("/login");
         }
     }
 

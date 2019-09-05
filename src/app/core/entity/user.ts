@@ -1,8 +1,14 @@
 import { GenericValue } from '../../../framework/core/entity/generic.value';
+import SecurityUtil from '../../utils/security.util';
 export class User extends GenericValue {
-    protected entity: string = 'user';
-    protected primaryKeyField: string = 'username';
+    public static readonly entity: string = 'user';
+    public readonly entity: string = User.entity;
+    protected readonly primaryKeyField: string = 'username';
     protected data?: userData;
+
+    public static create(): User {
+        return new User();
+    }
 
     public static readonly definition: EntityDefinition = {
         "name": "user",
@@ -19,11 +25,26 @@ export class User extends GenericValue {
     };
 
     public find(id: string): Promise<User> {
-        return this.doSelect(id);
+        return this.doSelect(id, false);
     }
 
-    public findAll(condition: string = "", inserts: any[] = []): Promise<User[]> {
-        return this.doSelectAll(condition, inserts);
+    public static findAll(condition: string = "", inserts: any[] = []): Promise<User[]> {
+        return this.doSelectAll(User.entity, condition, inserts);
+    }
+
+    public findLogin(username: string, password: string): Promise<User> {
+        let hashedPassword = SecurityUtil.hashPassword(password);
+        return new Promise((resolve, reject) => {
+            this.doSelectAll(`upper(username) = upper(?) and password = ?`, [username, hashedPassword])
+            .then(users => {
+                if (users.length === 0) {
+                    reject("User not found.");
+                } else {
+                    this.setData(users[0]);
+                    resolve(this);
+                }
+            })
+        })
     }
 
     public get username() {

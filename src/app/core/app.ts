@@ -14,6 +14,12 @@ import apiController from '../controllers/api.controller';
 import websocketcontroller from '../controllers/websocket.controller';
 import SecurityUtil from '../utils/security.util';
 import BaseUtil from '../utils/base.util';
+import morgan = require('morgan');
+import ExpressUtil from '../utils/express.util';
+
+app.use(morgan(BaseUtil.morgan, {
+    skip: BaseUtil.morganSkip
+}));
 
 app.use(cookieParser());
 app.use(session({
@@ -34,5 +40,7 @@ app.use('/', loginController);
 app.use('/', SecurityUtil.ensureLogin, BaseUtil.addUserPref, mainController);
 app.use('/course', SecurityUtil.ensureLogin, BaseUtil.addUserPref, courseController);
 app.use('/api', SecurityUtil.ensureLogin, BaseUtil.addUserPref, apiController);
+
+app.use(ExpressUtil.handleNotFound);
 
 export default app;
