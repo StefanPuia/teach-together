@@ -62,6 +62,7 @@ typings/
 .next
 
 # config files
+src/app/config/base.config.ts
 src/app/config/custom.config.ts
 .vscode/
 app/framework/

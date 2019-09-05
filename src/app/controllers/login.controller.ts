@@ -5,7 +5,7 @@ import BaseUtil from '../utils/base.util';
 
 const router: Router = Router();
 
-router.get('/', BaseUtil.addUserPref, (req: Request, res: Response) => {
+router.get('/login', (req: Request, res: Response) => {
     Screen.create('main/index', req, res).appendContext({
         test: 1,
         url: req.url

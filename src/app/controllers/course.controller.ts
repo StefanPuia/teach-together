@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
 import Screen from '../../framework/core/screen';
-import { User } from '../core/user';
-import Util from '../utils/util';
+import { User } from '../core/entity/user';
+import BaseUtil from '../utils/base.util';
 
 const router: Router = Router();
 
-router.get('/:courseId', Util.addUserPref, (req: CourseRequest, res: Response) => {
+router.get('/:courseId', BaseUtil.addUserPref, (req: CourseRequest, res: Response) => {
     Promise.all([
         new User().findAll()
     ]).then((values) => {

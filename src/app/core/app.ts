@@ -1,25 +1,37 @@
-import errorHandler from 'errorhandler';
-import app from '../../framework/core/app';
-import Config from '../../framework/config/base.config';
-import CustomConfig from '../config/custom.config';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+const MySQLStore = require('connect-mysql')(session);
 
+import app from '../../framework/core/app';
+import BaseConfig from '../config/base.config';
+
+import loginController from '../controllers/login.controller';
 import mainController from '../controllers/main.controller';
 import courseController from '../controllers/course.controller';
 import apiController from '../controllers/api.controller';
 import websocketcontroller from '../controllers/websocket.controller';
 import expressWs from 'express-ws';
 import * as express from 'express';
-import { Request } from 'express';
-import { NextFunction } from 'connect';
+import SecurityUtil from '../utils/security.util';
+
+app.use(cookieParser());
+app.use(session({
+    secret: BaseConfig.cookieSettings.secret,
+    cookie: BaseConfig.cookieSettings.cookie,
+    store: new MySQLStore({
+        config: BaseConfig.database
+    })
+}));
 
 const webSocketInstance = expressWs(app);
-app.use(errorHandler());
-app.set('views', [Config.viewsLocation, CustomConfig.viewsLocation]);
-app.use('/static', express.static(CustomConfig.staticLocation));
-
-app.use('/', mainController);
-app.use('/course', courseController);
-app.use('/api', apiController);
 websocketcontroller(webSocketInstance.app);
+
+app.set('views', [BaseConfig.viewsLocation, BaseConfig.viewsLocation]);
+app.use('/static', express.static(BaseConfig.staticLocation));
+
+app.use('/', loginController);
+app.use('/', SecurityUtil.ensureLogin, mainController);
+app.use('/course', SecurityUtil.ensureLogin, courseController);
+app.use('/api', SecurityUtil.ensureLogin, apiController);
 
 export default app;

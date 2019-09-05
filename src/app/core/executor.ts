@@ -1,15 +1,16 @@
 import path from 'path';
 import * as fs from 'fs';
+import sha256 from 'sha256';
 import { Request, Response } from 'express';
 import Spawner from './spawner';
 import Debug from '../../framework/utils/debug.util';
 
 export default abstract class Executor {
     public static executeJavaScript(req: Request, res: Response) {
-        const fileName: string = path.join("spawner/", Math.random().toString() + ".js");
-        fs.writeFileSync(fileName, wrap("javascript", req.body.code));
+        const fileName: string = path.join("spawner/", this.getFileName("js"));
+        fs.writeFileSync(fileName, ExecutorWrapper.javascript(req.body.code));
         const spawner = new Spawner("node", fileName);
-        Executor.handleProcess(spawner, req, res);
+        this.handleProcess(spawner, req, res);
         spawner.onExit(() => {
             fs.unlinkSync(fileName);
         })
@@ -24,21 +25,23 @@ export default abstract class Executor {
             res.status(500).send(spawner.getStderr());
         });
     }
+
+    private static getFileName(extension: string): string {
+        const rand = Math.random().toString() + new Date().getTime();
+        const hash = sha256(rand); 
+        return `${hash.substr(0, 30)}.${extension}`;
+    }
 }
 
-const wrap = (language: string, code: string) => {
-    switch (language) {
-        case "javascript": 
-            return `
-                try {
-                    eval(\`function main() { ${code.replace(/\`/g, "\\\`")} }\`);
-                    const returnData = main();
-                    if (returnData) console.log(returnData);
-                } catch (err) {
-                    console.trace(err);
-                }
-            `;
-        
-        default: return code;
+class ExecutorWrapper {
+    public static javascript(code: string): string {
+        let evalCode = code.replace(/\`/g, "\\\`").replace(/\//g, "\\/");
+        return `try { eval(\`function main() { ${evalCode} \n}\`);
+                const returnData = main();
+                if (returnData) console.log(returnData);
+            } catch (err) {
+                console.trace(err);
+            }
+        `;
     }
 }

@@ -1,5 +1,5 @@
 // src/config/custom.config.ts
-export interface CustomConfigInterface {
+export interface ConfigInterface {
     database: DatabaseConnection;
     cookieSettings: CookieSettings;
     viewsLocation: string;

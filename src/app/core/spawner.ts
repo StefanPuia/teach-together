@@ -1,5 +1,5 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import CustomConfig from '../config/custom.config';
+import BaseConfig from '../config/base.config';
 import Debug from '../../framework/utils/debug.util';
 
 export default class Spawner {
@@ -29,10 +29,12 @@ export default class Spawner {
                         this.process.kill("SIGKILL");
                         this.addStderr("Timeout error");
                     }
-                }, CustomConfig.processTimeout)
+                }, BaseConfig.processTimeout)
 
                 this.process.stdout.on('data', (data) => {
-                    this.addStdout(data);
+                    for (let x of data.toString().split("\n")) {
+                        this.addStdout(x);
+                    }
                 });
 
                 this.process.stderr.on('data', (data) => {
@@ -82,6 +84,9 @@ export default class Spawner {
     }
 
     private addOutput(variable: string, message: any): string {
-        return variable + (message.toString().replace(/([a-zA-Z]+:\\)+(.+\\)+/g, 'fakepath/') + "\n").trim();
+        if (message.toString().trim() !== "") {
+            return variable + (message.toString().replace(/([a-zA-Z]+:\\)+(.+\\)+/g, 'fakepath/') + "\n");
+        }
+        return variable;
     }
 }

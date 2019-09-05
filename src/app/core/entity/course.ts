@@ -1,4 +1,4 @@
-import { GenericValue } from '../../framework/core/entity/generic.value';
+import { GenericValue } from '../../../framework/core/entity/generic.value';
 export class Course extends GenericValue {
     protected entity: string = 'course';
     protected primaryKeyField: string = 'course_id';

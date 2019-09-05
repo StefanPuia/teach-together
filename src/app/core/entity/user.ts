@@ -1,4 +1,4 @@
-import { GenericValue } from '../../framework/core/entity/generic.value';
+import { GenericValue } from '../../../framework/core/entity/generic.value';
 export class User extends GenericValue {
     protected entity: string = 'user';
     protected primaryKeyField: string = 'username';
