@@ -1,7 +1,7 @@
 [submodule "src/framework"]
-	path = src/framework
-	url = https://github.com/StefanPuia/typescript-app.git
+    path = src/framework
+    url = https://github.com/StefanPuia/typescript-app.git
 
 [submodule "static/ace-builds"]
-	path = src/ace-builds
-	url = https://github.com/ajaxorg/ace-builds.git
+    path = static/ace-builds
+    url = git@github.com:ajaxorg/ace-builds.git
