@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import Screen from '../../framework/core/screen';
+import Screen from '../core/screen';
 
 const router: Router = Router();
 

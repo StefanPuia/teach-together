@@ -1,5 +1,6 @@
 import { GenericValue } from '../../../framework/core/entity/generic.value';
 import SecurityUtil from '../../utils/security.util';
+import DatabaseUtil from '../../../framework/utils/database.util';
 export class User extends GenericValue {
     public static readonly entity: string = 'user';
     public readonly entity: string = User.entity;
@@ -14,13 +15,13 @@ export class User extends GenericValue {
         "name": "user",
         "fields": [{
             "name": "username",
-            "type": "varchar(45)",
+            "type": DatabaseUtil.DATA_TYPE.ID_LONG,
             "primaryKey": true,
             "notNull": true,
             "unique": true
         }, {
             "name": "password",
-            "type": "varchar(256)"
+            "type": DatabaseUtil.DATA_TYPE.DESCRIPTION
         }]
     };
 
@@ -29,7 +30,17 @@ export class User extends GenericValue {
     }
 
     public static findAll(condition: string = "", inserts: any[] = []): Promise<User[]> {
-        return this.doSelectAll(User.entity, condition, inserts);
+        return new Promise((resolve, reject) => {
+            this.doSelectAll(User.entity, condition, inserts).then(results => {
+                let users: Array<User> = [];
+                for (let user of results) {
+                    let userObject = new User();
+                    userObject.setData(user);
+                    users.push(userObject);
+                }
+                resolve(users);
+            }).catch(reject);
+        });
     }
 
     public findLogin(username: string, password: string): Promise<User> {

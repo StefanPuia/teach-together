@@ -37,9 +37,10 @@ app.set('views', [BaseConfig.viewsLocation, BaseConfig.viewsLocation]);
 app.use('/static', express.static(BaseConfig.staticLocation));
 
 app.use('/', loginController);
-app.use('/', SecurityUtil.ensureLogin, BaseUtil.addUserPref, mainController);
-app.use('/course', SecurityUtil.ensureLogin, BaseUtil.addUserPref, courseController);
-app.use('/api', SecurityUtil.ensureLogin, BaseUtil.addUserPref, apiController);
+app.use(SecurityUtil.addUserPref);
+app.use('/', SecurityUtil.ensureLogin, mainController);
+app.use('/course', SecurityUtil.ensureLogin, courseController);
+app.use('/api', SecurityUtil.ensureLogin, apiController);
 
 app.use(ExpressUtil.handleNotFound);
 

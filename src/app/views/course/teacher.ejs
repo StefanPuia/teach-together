@@ -10,14 +10,8 @@
     <div class="full-editor" id="fullEditor">
         <div class="editor-options">
             <ul class="sidenav-simple h-auto" id="teacherIDEActions">
-                <%# <li>
-                    <a href="javascript:$('#teacherIDEActions').toggleClass('sidenav-simple-expand-fs')">
-                        <span class="mif-apps icon"></span>
-                        <span class="title">Collapse</span>
-                    </a>
-                </li>%>
                 <li>
-                    <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run">
+                    <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run (Ctrl + Enter)">
                         <span class="mif-play icon"></span>
                     </a>
                 </li>
@@ -43,7 +37,7 @@
                 <div class="editor" id="teacherIDE"></div>
             </div>
             <div class="d-flex flex-justify-center flex-align-center">
-                <pre class="console" id="teacherConsole"></pre>
+                <pre class="console" id="teacherConsole">Result: </pre>
             </div>
         </div>
     </div>
@@ -55,7 +49,7 @@ $(document).ready(() => {
     aceEditor = ace.edit($("#teacherIDE").get(0), {
         mode: "ace/mode/javascript",
         selectionStyle: "text",
-        theme: "<%= parameters.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
+        theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
         showPrintMargin: false,
     })
 });

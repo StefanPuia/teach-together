@@ -1,16 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import FrameworkBaseUtil from '../../framework/utils/base.util';
-import dateFormat from 'dateformat';
 import Debug from '../../framework/utils/debug.util';
 import morgan = require('morgan');
 
 
 export default abstract class BaseUtil extends FrameworkBaseUtil {
-    public static addUserPref(req: Request, res: Response, next: NextFunction) {
-        req.body.theme = "dark";
-        next();
-    }
-
     public static morgan(tokens: morgan.TokenIndexer, req: Request, res: Response) {
         return Debug.formatLogText([
             tokens.url(req, res),

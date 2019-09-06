@@ -1,0 +1,10 @@
+<%-include('partial/head')%>
+<% if (session && session.user) { %>
+    <%-include('partial/navbar')%>
+<% } %>
+
+<div class="container">
+    <h1>Error</h1>
+    <pre><%=error%></pre>
+    <a class="button info" href="/"><span class="mif-arrow-left"></span> Head back</a>
+</div>
