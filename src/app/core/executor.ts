@@ -7,7 +7,7 @@ import Debug from '../../framework/utils/debug.util';
 
 export default abstract class Executor {
     public static executeJavaScript(req: Request, res: Response) {
-        const fileName: string = path.join("spawner/", this.getFileName("js"));
+        const fileName: string = path.join(__dirname, "../../../spawner/", this.getFileName("js"));
         fs.writeFileSync(fileName, ExecutorWrapper.javascript(req.body.code));
         const spawner = new Spawner("node", fileName);
         this.handleProcess(spawner, req, res);
