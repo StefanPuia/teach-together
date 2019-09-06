@@ -49,7 +49,7 @@ export default class Spawner {
                     } else if (this.stderr !== "") {
                         reject(this.stderr);
                     } else {
-                        resolve(code);
+                        resolve(code || undefined);
                     }
                 })
             } else {
