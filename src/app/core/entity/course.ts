@@ -1,5 +1,6 @@
-import { GenericValue } from '../../../framework/core/entity/generic.value';
-import DatabaseUtil from '../../../framework/utils/database.util';
+import { GenericValue } from '../../../framework/core/generic.value';
+import { EntityEngine } from '../../../framework/core/engine/entity.engine';
+
 export class Course extends GenericValue {
     public static readonly entity: string = 'course';
     protected readonly entity: string = Course.entity;
@@ -20,33 +21,33 @@ export class Course extends GenericValue {
         "name": "course",
         "fields": [{
             "name": "course_id",
-            "type": DatabaseUtil.DATA_TYPE.ID_SHORT,
+            "type": EntityEngine.DATA_TYPE.ID_SHORT,
             "notNull": true,
             "unique": true
         }, {
             "name": "name",
-            "type": DatabaseUtil.DATA_TYPE.DESCRIPTION,
+            "type": EntityEngine.DATA_TYPE.DESCRIPTION,
             "notNull": true
         }, {
             "name": "description",
-            "type": DatabaseUtil.DATA_TYPE.DESCRIPTION
+            "type": EntityEngine.DATA_TYPE.DESCRIPTION
         }, {
             "name": "engine_id",
-            "type": DatabaseUtil.DATA_TYPE.ID_SHORT
+            "type": EntityEngine.DATA_TYPE.ID_SHORT
         }, {
             "name": "visibility",
             "type": "INT(1)"
         }, {
             "name": "created_by",
-            "type": DatabaseUtil.DATA_TYPE.ID_LONG,
+            "type": EntityEngine.DATA_TYPE.ID_LONG,
             "notNull": true
         }],
         "foreignKeys": [{
             "name": "course_created_by_user",
             "field": "created_by",
             "reference": {
-                "field": "username",
-                "table": "user"
+                "field": "user_login_id",
+                "table": "user_login"
             },
             "onDelete": "restrict",
             "onUpdate": "restrict"

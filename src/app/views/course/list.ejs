@@ -1,34 +1,32 @@
 <%-include('partial/head')%>
 <%-include('partial/navbar')%>
 
-<div class="container pt-5">
-    <div>
-        <table class="table striped table-border mt-4" data-role="table" data-cls-table-top="row flex-nowrap" 
-            data-cls-search="cell-md-8" data-cls-rows-count="cell-md-4">
-            <thead>
+<div class="container">
+    <table class="table striped table-border mt-4" data-role="table" data-cls-table-top="row flex-nowrap" 
+        data-cls-search="cell-md-8" data-cls-rows-count="cell-md-4">
+        <thead>
+            <tr>
+                <th data-sortable="true">Course</th>
+                <th>Description</th>
+                <th data-sortable="true">Views</th>
+                <th data-sortable="true">Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let course of courses) { %>
                 <tr>
-                    <th data-sortable="true">Course</th>
-                    <th>Description</th>
-                    <th data-sortable="true">Views</th>
-                    <th data-sortable="true">Created</th>
-                    <th></th>
+                    <td><%=course.data.name%></td>
+                    <td><%=course.data.description%></td>
+                    <td><%=0%></td>
+                    <td><%=dateFormat(course.data.created_stamp)%></td>
+                    <td>
+                        <a class="button" href="/course/<%=course.data.course_id%>">
+                            <span class="mif-user-plus"></span> Join Course
+                        </a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <% for(let course of courses) { %>
-                    <tr>
-                        <td><%=course.data.name%></td>
-                        <td><%=course.data.description%></td>
-                        <td><%=0%></td>
-                        <td><%=dateFormat(course.data.created_stamp)%></td>
-                        <td>
-                            <a class="button" href="/course/<%=course.data.course_id%>">
-                                <span class="mif-user-plus"></span> Join Course
-                            </a>
-                        </td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
+            <% } %>
+        </tbody>
+    </table>
 </div>

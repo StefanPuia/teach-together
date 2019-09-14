@@ -1,5 +1,5 @@
 import * as expressWs from 'express-ws';
-import Debug from '../../framework/utils/debug.util';
+import { DebugUtil } from '../../framework/utils/debug.util';
 
 function sendAll(data: any) {
     for(let client of clients) {
@@ -10,13 +10,14 @@ function sendAll(data: any) {
 }
 
 let clients: any = [];
-export default (app: expressWs.Application) => {
+
+function websocketHandler(app: expressWs.Application) {
     app.ws('/:roomid', (ws: any, req: any) => {
         ws.roomId = req.params.roomid;
         clients.push(ws);
 
         // error handling WIP
-        ws.on('error', Debug.logError);
+        ws.on('error', DebugUtil.logError);
 
         // listen for messages
         ws.on('message', function incoming(message: any) {
@@ -24,5 +25,6 @@ export default (app: expressWs.Application) => {
             sendAll(data);
         })
     })
-
 }
+
+export { websocketHandler };

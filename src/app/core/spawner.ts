@@ -1,8 +1,8 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import BaseConfig from '../config/base.config';
-import Debug from '../../framework/utils/debug.util';
+import { BaseConfig } from '../config/base.config';
+import { DebugUtil } from '../../framework/utils/debug.util';
 
-export default class Spawner {
+export class Spawner {
     private readonly processPath: string;
     private readonly arguments: Array<string>;
     private code: number | null = 0;
@@ -19,7 +19,7 @@ export default class Spawner {
     public spawn() {
         return new Promise((resolve, reject) => {
             if (this.processPath) {
-                Debug.logInfo(`Spawning process "${this.processPath}" with: ['${this.arguments.join("', '")}']`, "Spawner");
+                DebugUtil.logInfo(`Spawning process "${this.processPath}" with: ['${this.arguments.join("', '")}']`, "Spawner");
                 this.process = spawn(this.processPath, this.arguments, {
                     detached: true
                 });

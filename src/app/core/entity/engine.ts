@@ -1,10 +1,11 @@
-import { GenericValue } from '../../../framework/core/entity/generic.value';
-import DatabaseUtil from '../../../framework/utils/database.util';
+import { GenericValue } from '../../../framework/core/generic.value';
+import { EntityEngine } from '../../../framework/core/engine/entity.engine';
+
 export class Engine extends GenericValue {
     public static readonly entity: string = "engine";
     public readonly entity: string = Engine.entity;
     protected readonly primaryKeyField: string = "engine_id";
-    protected data?: any;
+    protected data?: engineData;
 
     public static create(): Engine {
         return new Engine();
@@ -14,27 +15,27 @@ export class Engine extends GenericValue {
         "name": "engine",
         "fields": [{
             "name": "engine_id",
-            "type": DatabaseUtil.DATA_TYPE.ID_SHORT,
+            "type": EntityEngine.DATA_TYPE.ID_SHORT,
             "primaryKey": true,
             "notNull": true,
             "unique": true
         }, {
             "name": "name",
-            "type": DatabaseUtil.DATA_TYPE.ID_LONG,
+            "type": EntityEngine.DATA_TYPE.ID_LONG,
             "notNull": true
         }, {
             "name": "description",
-            "type": DatabaseUtil.DATA_TYPE.DESCRIPTION
+            "type": EntityEngine.DATA_TYPE.DESCRIPTION
         }, {
             "name": "courses",
             "type": "int",
             "default": "0"
         }, {
             "name": "picture",
-            "type": DatabaseUtil.DATA_TYPE.DESCRIPTION
+            "type": EntityEngine.DATA_TYPE.DESCRIPTION
         }, {
             "name": "colour",
-            "type": DatabaseUtil.DATA_TYPE.ID_LONG
+            "type": EntityEngine.DATA_TYPE.ID_LONG
         }]
     };
 
@@ -55,4 +56,13 @@ export class Engine extends GenericValue {
             }).catch(reject);
         });
     }
+}
+
+interface engineData {
+    engine_id: string,
+    name: string,
+    description: string,
+    courses: number,
+    picture: string,
+    colour: string
 }

@@ -51,8 +51,19 @@ $(document).ready(() => {
         selectionStyle: "text",
         theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
         showPrintMargin: false,
+        readOnly: <%= course.data.created_by !== session.user.data.user_login_id %>
     })
+
+    let delay = false;
+    aceEditor.getSession().on('change', function() {
+        clearTimeout(delay);
+        delay = setTimeout(log, 1000);
+    });
 });
+
+function log() {
+    console.log(aceEditor.getSession().getValue());
+}
 
 function toggleConsole() {
     $("#teacherConsole").toggle();

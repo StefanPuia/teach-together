@@ -1,15 +1,15 @@
-import { Router, Request, Response } from 'express';
-import Screen from '../core/screen';
-import { User } from '../core/entity/user';
-import ExpressUtil from '../utils/express.util';
-import BaseConfig from '../config/base.config';
-import SecurityUtil from '../utils/security.util';
-import Debug from '../../framework/utils/debug.util';
+import { Request, Response, Router } from 'express';
+import { UserLogin } from '../../framework/core/entity/user_login';
+import { DebugUtil } from '../../framework/utils/debug.util';
+import { BaseConfig } from '../config/base.config';
+import { Screen } from '../core/screen';
+import { ExpressUtil } from '../utils/express.util';
+import { SecurityUtil } from '../utils/security.util';
 
-const router: Router = Router();
+const loginController: Router = Router();
 const moduleName = "Controller.Login";
 
-router.get('/login', (req: Request, res: Response) => {
+loginController.get('/login', (req: Request, res: Response) => {
     if (SecurityUtil.userLoggedIn(req)) {
         res.redirect("/");
     } else {
@@ -17,16 +17,16 @@ router.get('/login', (req: Request, res: Response) => {
     }
 });
 
-router.post('/login', (req: Request, res: Response) => {
-    const username = req.body.username;
+loginController.post('/login', (req: Request, res: Response) => {
+    const userLoginId = req.body.userLoginId;
     const password = req.body.password;
     const remember = req.body.remember;
 
-    if (!username || !password) {
+    if (!userLoginId || !password) {
         ExpressUtil.handleLoginError(req, res, "No username or password provided");
     }
 
-    User.create().findLogin(username, password).then(user => {
+    UserLogin.create().findLogin(userLoginId, password).then(user => {
         if (req.session) {
             if (remember === "Y") {
                 req.session.cookie.maxAge = BaseConfig.cookieRememberMeMaxAge;
@@ -39,7 +39,7 @@ router.post('/login', (req: Request, res: Response) => {
     });
 });
 
-router.get('/logout', (req: Request, res: Response) => {
+loginController.get('/logout', (req: Request, res: Response) => {
     if (req.session) {
         req.session.destroy(() => {
             res.redirect("/login");
@@ -50,7 +50,7 @@ router.get('/logout', (req: Request, res: Response) => {
     }
 });
 
-router.get("/register", (req: Request, res: Response) => {
+loginController.get("/register", (req: Request, res: Response) => {
     if (SecurityUtil.userLoggedIn(req)) {
         res.redirect("/");
     } else {
@@ -58,29 +58,29 @@ router.get("/register", (req: Request, res: Response) => {
     }
 });
 
-router.post('/register', (req: Request, res: Response) => {
-    const username = req.body.username;
+loginController.post('/register', (req: Request, res: Response) => {
+    const userLoginId = req.body.userLoginId;
     const password = req.body.password;
     const remember = req.body.remember;
 
-    if (!username || !password) {
+    if (!userLoginId || !password) {
         ExpressUtil.handleRegisterError(req, res, "No username or password provided");
     }
 
-    User.create().find(username).then(existingUser => {
+    UserLogin.create().find(userLoginId).then(existingUser => {
         if (existingUser) {
             return ExpressUtil.handleRegisterError(req, res, "Username already in use.");
         }
         createUser();
     }).catch(err => {
-        Debug.logWarning(err, moduleName);
+        DebugUtil.logWarning(err, moduleName);
         createUser();
     });
 
     function createUser() {
-        const user = User.create();
+        const user = UserLogin.create();
         user.setData({
-            username: username,
+            user_login_id: userLoginId,
             password: SecurityUtil.hashPassword(password)
         })
         user.insert().then(() => {
@@ -97,4 +97,4 @@ router.post('/register', (req: Request, res: Response) => {
     }
 });
 
-export default router;
+export { loginController };

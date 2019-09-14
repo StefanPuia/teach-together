@@ -1,4 +1,4 @@
-insert into user(username, password)
+insert into user_login(user_login_id, password)
 values
     ('stephano2013', '93e566f920ff866e3288cfa4b48813588b084d3d15b6e59fe6bb09975a202209');
 

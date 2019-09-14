@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Screen from '../core/screen';
+import { Screen } from '../core/screen';
 
-export default abstract class ExpresssUtil {
+export abstract class ExpressUtil {
     public static handleNotFound(req: Request, res: Response) {
         Screen.create('404', req, res).renderQuietly();
     }

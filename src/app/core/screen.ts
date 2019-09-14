@@ -1,9 +1,9 @@
-import FrameworkScreen from '../../framework/core/screen';
+import { Screen as FrameworkScreen } from '../../framework/core/screen';
 import { RenderModifier } from '../../framework/utils/render.util';
 import { Request, Response } from 'express';
 import dateFormat from 'dateformat';
 
-export default class Screen extends FrameworkScreen {
+export class Screen extends FrameworkScreen {
     protected constructor(viewName: string, req: Request, res: Response, errorHandler?: Function,
             context?: GenericObject, status?: number, beforeRender?: RenderModifier,
             afterRender?: RenderModifier) {

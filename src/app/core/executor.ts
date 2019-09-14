@@ -2,8 +2,8 @@ import path from 'path';
 import * as fs from 'fs';
 import sha256 from 'sha256';
 import { Request, Response } from 'express';
-import Spawner from './spawner';
-import Debug from '../../framework/utils/debug.util';
+import { Spawner } from './spawner';
+import { DebugUtil } from '../../framework/utils/debug.util';
 
 export default abstract class Executor {
     public static executeJavaScript(req: Request, res: Response) {
@@ -21,7 +21,7 @@ export default abstract class Executor {
         .then(() => {
             res.send(spawner.getStdout());
         }).catch(err => {
-            Debug.logError(err, "Executor");
+            DebugUtil.logError(err, "Executor");
             res.status(500).send(spawner.getStderr());
         });
     }

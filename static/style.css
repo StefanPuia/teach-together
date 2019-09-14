@@ -17,6 +17,10 @@
     right: 0;
 }
 
+.app-bar .app-bar-menu.app-bar-menu-right.collapsed ul.d-menu {
+    right: 0;
+}
+
 #spinner {
     position: fixed;
     z-index: 3000;
