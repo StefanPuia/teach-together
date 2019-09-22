@@ -1,30 +1,38 @@
 import * as expressWs from 'express-ws';
 import { DebugUtil } from '../../framework/utils/debug.util';
 
-function sendAll(data: any) {
-    for(let client of clients) {
-        if (client.roomId == data.room && client.readyState === client.OPEN) {
-            client.send(JSON.stringify(data));
-        }
-    }
-}
-
-let clients: any = [];
-
 function websocketHandler(app: expressWs.Application) {
-    app.ws('/:roomid', (ws: any, req: any) => {
-        ws.roomId = req.params.roomid;
-        clients.push(ws);
+    let clients: GenericObject = {
+        course: {}
+    };
 
-        // error handling WIP
-        ws.on('error', DebugUtil.logError);
+    app.ws('/course/:courseId', (ws: any, req: any) => {
+        ws.on('error', (err: any) => { DebugUtil.logError(err, "Controller.WebSocket"); });
 
-        // listen for messages
-        ws.on('message', function incoming(message: any) {
+        let courseId = req.params.courseId;
+        if (!clients.course[courseId]) {
+            clients.course[courseId] = [];
+        }
+        clients.course[courseId].push(ws);
+
+        ws.on('message', (message: any) => {
             let data = JSON.parse(message);
-            sendAll(data);
+            switch (data.channel) {
+                case "chat":
+                    data.text = data.text.replace(/</g, "&lt;");
+                    break;
+            }
+            sendResponse(data, clients.course[courseId], ws);
         })
     })
+}
+
+function sendResponse(message: any, clients: Array<any>, ws: any) {
+    for (let client of clients) {
+        if (client.readyState === client.OPEN && client !== ws) {
+            client.send(JSON.stringify(message));
+        }
+    }
 }
 
 export { websocketHandler };
