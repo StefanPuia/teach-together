@@ -8,6 +8,10 @@ FrameworkBaseConfig.logFullQuery = true;
 FrameworkBaseConfig.morganExtraIgnore = BaseConfig.morganExtraIgnore;
 FrameworkBaseConfig.enableFrameworkController = true;
 
+import { LabelUtil } from './framework/utils/label.util';
+import { BaseLabels } from './framework/config/base.labels';
+import { ServiceEngine } from './framework/core/engine/service.engine';
+import { ServiceLoad } from './framework/config/service.load.config';
 import { EntityLoad as EntityLoadFramework} from './framework/config/entity.load.config';
 import { EntityLoad } from './app/config/entity.load.config';
 import { EntityEngine } from './framework/core/engine/entity.engine';
@@ -16,6 +20,10 @@ import { app } from './app/core/app';
 
 import * as fs from 'fs';
 import path from 'path';
+
+LabelUtil.append(BaseLabels);
+DatabaseUtil.init(BaseConfig.databaseConfig, BaseConfig.databaseMode, EntityLoad);
+ServiceEngine.append(ServiceLoad);
 
 const entityDefinitions = EntityLoadFramework.slice().concat(EntityLoad);
 DatabaseUtil.init(BaseConfig.database, BaseConfig.databaseFormatMode, entityDefinitions, () => {
