@@ -1,6 +1,7 @@
 [submodule "src/framework"]
     path = src/framework
     url = https://github.com/StefanPuia/typescript-app.git
+	branch = master
 
 [submodule "static/ace-builds"]
     path = static/ace-builds
