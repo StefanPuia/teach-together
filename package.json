@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "debug": "nodemon --exec ts-node -- ./src/deploy.ts",
-    "build": "tsc && cp -r src/app/views build/app/ && cp -r src/framework/views build/framework/ && mkdir spawner",
+    "build": "tsc && cp -r src/app/views build/app/ && cp -r src/framework/views build/framework/ && mkdir -p spawner",
     "build-win": "tsc && xcopy /e /y src\\app\\views build\\app\\views\\ && xcopy /e /y src\\framework\\views build\\framework\\ && if not exist \"spawner\\\" mkdir spawner"
   },
   "repository": {

@@ -4,6 +4,8 @@ import { DebugUtil } from './framework/utils/debug.util';
 import { BaseConfig } from './app/config/base.config';
 import { BaseConfig as FrameworkBaseConfig } from './framework/config/base.config';
 FrameworkBaseConfig.logLevel = DebugUtil.TIMING;
+FrameworkBaseConfig.cookieSettings = BaseConfig.cookieSettings;
+FrameworkBaseConfig.databaseConfig = BaseConfig.database;
 FrameworkBaseConfig.logFullQuery = true;
 FrameworkBaseConfig.morganExtraIgnore = BaseConfig.morganExtraIgnore;
 FrameworkBaseConfig.enableFrameworkController = true;
