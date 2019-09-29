@@ -40,7 +40,7 @@ class ExecutorWrapper {
                 const returnData = main();
                 if (returnData) console.log(returnData);
             } catch (err) {
-                console.trace(err);
+                console.log(err.message);
             }
         `;
     }

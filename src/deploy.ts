@@ -7,6 +7,7 @@ FrameworkBaseConfig.logLevel = DebugUtil.TIMING;
 FrameworkBaseConfig.logFullQuery = true;
 FrameworkBaseConfig.morganExtraIgnore = BaseConfig.morganExtraIgnore;
 FrameworkBaseConfig.enableFrameworkController = true;
+FrameworkBaseConfig.passwordSalt = BaseConfig.passwordSalt;
 
 import { LabelUtil } from './framework/utils/label.util';
 import { BaseLabels } from './framework/config/base.labels';

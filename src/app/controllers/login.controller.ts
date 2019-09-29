@@ -31,7 +31,7 @@ loginController.post('/login', (req: Request, res: Response) => {
             if (remember === "Y") {
                 req.session.cookie.maxAge = BaseConfig.cookieRememberMeMaxAge;
             }
-            req.session.user = user;
+            req.session.userLoginId = user.userLoginId;
         }
         res.redirect("/");
     }).catch(err => {
