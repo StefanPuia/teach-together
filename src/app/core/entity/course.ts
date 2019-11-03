@@ -39,7 +39,7 @@ export class Course extends GenericValue {
             "type": "INT(1)"
         }, {
             "name": "created_by",
-            "type": EntityEngine.DATA_TYPE.ID_LONG,
+            "type": EntityEngine.DATA_TYPE.NUMBER,
             "notNull": true
         }],
         "foreignKeys": [{

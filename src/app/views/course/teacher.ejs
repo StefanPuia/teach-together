@@ -76,6 +76,7 @@
 <script>
 let aceEditor;
 let ws;
+let deltas = [];
 
 $(document).ready(() => {
     aceEditor = ace.edit($("#teacherIDE").get(0), {
@@ -86,10 +87,16 @@ $(document).ready(() => {
         readOnly: <%= course.data.created_by !== session.userLoginId %>
     })
 
+    aceEditor.on("change", delta => {
+        deltas.push({
+            timestamp: new Date().getTime(),
+            delta: delta
+        })
+    })
+
     let delay = false;
     aceEditor.getSession().on('change', function() {
         clearTimeout(delay);
-        delay = setTimeout(log, 1000);
     });
 
     ws = new WebSocket("ws://localhost:8080/course/<%=course.data.course_id%>");
@@ -105,6 +112,14 @@ $(document).ready(() => {
     });
 });
 
+function applyDelta(current, deltas) {
+    aceEditor.getSession().getDocument().applyDelta(current.delta);
+    if(deltas.length) {
+        setTimeout(() => {
+            applyDelta(deltas[0], deltas.slice(1));
+        }, deltas[0].timestamp - current.timestamp)
+    }
+}
 
 function handleChatSend(message) {
     message.channel = "chat";
@@ -112,9 +127,9 @@ function handleChatSend(message) {
     ws.send(JSON.stringify(message));
 }
 
-function log() {
-    console.log(aceEditor.getSession().getValue());
-}
+// function log() {
+//     console.log(aceEditor.getSession().getValue());
+// }
 
 function showSideMenu(view) {
     let viewEl = $("#sidebarContent .sidebarContentView" + view);

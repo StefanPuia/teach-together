@@ -1,4 +1,4 @@
-///<reference path='./framework/core/types.d.ts'/>
+///<reference path='./framework/core/types/index.d.ts'/>
 
 import { DebugUtil } from './framework/utils/debug.util';
 import { BaseConfig } from './app/config/base.config';

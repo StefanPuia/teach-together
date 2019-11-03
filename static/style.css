@@ -21,6 +21,10 @@
     right: 0;
 }
 
+body {
+    min-height: unset;
+}
+
 #spinner {
     position: fixed;
     z-index: 3000;
