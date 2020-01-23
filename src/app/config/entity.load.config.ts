@@ -1,8 +1,7 @@
-import { Course } from '../core/entity/course';
-import { Engine } from '../core/entity/engine';
+import { EntityDefinitions } from "../core/entity-definition/entity.definition";
 
-const EntityLoad: Array<EntityDefinition> = [
-    Engine.definition,
-    Course.definition
-];
+let EntityLoad: Array<EntityDefinition> = [];
+
+EntityLoad = EntityLoad.concat(EntityDefinitions);
+
 export { EntityLoad };

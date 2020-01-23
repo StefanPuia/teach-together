@@ -17,7 +17,7 @@ import { ServiceEngine } from './framework/core/engine/service.engine';
 import { ServiceLoad } from './framework/config/service.load.config';
 import { EntityLoad as EntityLoadFramework} from './framework/config/entity.load.config';
 import { EntityLoad } from './app/config/entity.load.config';
-import { EntityEngine } from './framework/core/engine/entity.engine';
+import { EntityEngine } from './framework/core/engine/entity/entity.engine';
 import { DatabaseUtil } from './framework/utils/database.util';
 import { app } from './app/core/app';
 
@@ -25,10 +25,9 @@ import * as fs from 'fs';
 import path from 'path';
 
 LabelUtil.append(BaseLabels);
-DatabaseUtil.init(BaseConfig.databaseConfig, BaseConfig.databaseMode, EntityLoad);
 ServiceEngine.append(ServiceLoad);
 
-const entityDefinitions = EntityLoadFramework.slice().concat(EntityLoad);
+const entityDefinitions = EntityLoadFramework.concat(EntityLoad);
 DatabaseUtil.init(BaseConfig.database, BaseConfig.databaseFormatMode, entityDefinitions, () => {
     if (BaseConfig.databaseFormatMode == EntityEngine.MODE.REBUILD) {
         const seedData = fs.readFileSync(path.join(__dirname, '../seed-data.sql'), "utf8")

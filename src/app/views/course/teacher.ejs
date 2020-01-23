@@ -84,7 +84,15 @@ $(document).ready(() => {
         selectionStyle: "text",
         theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
         showPrintMargin: false,
-        readOnly: <%= course.data.created_by !== session.userLoginId %>
+        readOnly: <%= course.data.createdBy !== session.userLoginId %>
+    })
+
+    aceEditor.commands.addCommand({
+        name: "execute",
+        bindKey: {win: "Ctrl-Enter", mac: "Command-Enter"},
+        exec: () => {
+            executeScript(aceEditor.getValue(), $('#teacherConsole'));
+        }
     })
 
     aceEditor.on("change", delta => {
@@ -99,7 +107,7 @@ $(document).ready(() => {
         clearTimeout(delay);
     });
 
-    ws = new WebSocket("ws://localhost:8080/course/<%=course.data.course_id%>");
+    ws = new WebSocket("ws://localhost:80/course/<%=course.data.courseId%>");
     ws.addEventListener('message', data => {
         let message = JSON.parse(data.data);
         switch (message.channel) {

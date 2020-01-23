@@ -4,7 +4,7 @@
 <div class="container pt-5">
     <div class="tiles-grid">
         <% for(let engine of engines) { %>
-            <div data-size="medium" data-role="tile" class="bg-<%=engine.data.colour%>" onclick="javascript:location.href='/course/list/<%=engine.data.engine_id%>'">
+            <div data-size="medium" data-role="tile" class="bg-<%=engine.data.colour%>" onclick="javascript:location.href='/course/list/<%=engine.data.engineId%>'">
                 <span class="branding-bar"><%=engine.data.name%></span>
                 <img src="<%=engine.data.picture%>" class="icon">
                 <span class="badge-top"><%=engine.data.courses%></span>

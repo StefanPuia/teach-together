@@ -1,13 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { Screen } from '../core/screen';
-import { Engine } from '../core/entity/engine';
-import { Course } from '../core/entity/course';
 import { ExpressUtil } from '../utils/express.util';
+import { EntityQuery } from '../../framework/core/engine/entity/entity.query';
 
 const courseController: Router = Router();
 
 courseController.get("/", (req: Request, res: Response) => {
-    Engine.findAll().then(engines => {
+    EntityQuery.from("Engine").cache(true).queryList().then(engines => {
         Screen.create("course/index", req, res).appendContext({
             engines: engines
         }).renderQuietly();
@@ -15,7 +14,7 @@ courseController.get("/", (req: Request, res: Response) => {
 })
 
 courseController.get("/list/:engineId", (req: Request, res: Response) => {
-    Course.findAll("engine_id = ?", [req.params.engineId]).then(courses => {
+    EntityQuery.from("Course").where({ "engineId": req.params.engineId }).queryList().then(courses => {
         Screen.create("course/list", req, res).appendContext({
             courses: courses
         }).renderQuietly();
@@ -23,9 +22,9 @@ courseController.get("/list/:engineId", (req: Request, res: Response) => {
 })
 
 courseController.get('/:courseId', (req: Request, res: Response) => {
-    Course.create().find(req.params.courseId).then(course => {
+    EntityQuery.from("Course").where({ "courseId": req.params.courseId }).queryFirst().then(course => {
         Screen.create('course/teacher', req, res).appendContext({
-            headerTitle: course.name,
+            headerTitle: course.get("name"),
             course: course
         }).renderQuietly();
     }).catch(err => {
