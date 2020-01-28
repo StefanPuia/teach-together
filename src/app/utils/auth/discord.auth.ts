@@ -11,6 +11,7 @@ export class DiscordAuth extends OAuthEngine {
     protected identifyURL: string = "https://discordapp.com/api/users/@me";
     protected scope: string = "identify";
     private static instance: DiscordAuth;
+    public static readonly provider = "DISCORD";
 
     private constructor() {
         super();
@@ -34,7 +35,8 @@ export class DiscordAuth extends OAuthEngine {
                 DiscordAuth.getInstance().identify(data.token_type, data.access_token)
                 .then((userData: GenericObject) => {
                     resolve({
-                        discord_id: userData.id,
+                        provider: DiscordAuth.provider,
+                        socialId: userData.id,
                         name: userData.username,
                         picture: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
                     })

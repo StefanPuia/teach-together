@@ -11,6 +11,7 @@ export class GoogleAuth extends OAuthEngine {
     protected identifyURL: string = "https://www.googleapis.com/oauth2/v2/userinfo";
     protected scope: string = "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile";
     private static instance: GoogleAuth;
+    public static readonly provider: "GOOGLE";
 
     private constructor() {
         super();
@@ -34,7 +35,8 @@ export class GoogleAuth extends OAuthEngine {
                 GoogleAuth.getInstance().identify(data.token_type, data.access_token)
                 .then((userData: GenericObject) => {
                     resolve({
-                        google_id: userData.id,
+                        provider: GoogleAuth.provider,
+                        socialId: userData.id,
                         name: userData.name,
                         picture: userData.picture
                     })
