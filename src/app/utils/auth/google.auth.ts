@@ -7,11 +7,11 @@ export class GoogleAuth extends OAuthEngine {
     protected tokenURL: string = "https://www.googleapis.com/oauth2/v4/token";
     protected clientID: string = BaseConfig.googleAuth.clientID;
     protected clientSecret: string = BaseConfig.googleAuth.clientSecret;
-    protected redirectURL: string = "http://localhost/auth/google";
+    protected redirectURL: string = GoogleAuth.redirectUrlPrefix + "auth/google";
     protected identifyURL: string = "https://www.googleapis.com/oauth2/v2/userinfo";
     protected scope: string = "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile";
     private static instance: GoogleAuth;
-    public static readonly provider: "GOOGLE";
+    public static readonly provider: string = "GOOGLE";
 
     private constructor() {
         super();

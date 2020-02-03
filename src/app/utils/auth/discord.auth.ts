@@ -7,11 +7,11 @@ export class DiscordAuth extends OAuthEngine {
     protected tokenURL: string = "https://discordapp.com/api/oauth2/token";
     protected clientID: string = BaseConfig.discordAuth.clientID;
     protected clientSecret: string = BaseConfig.discordAuth.clientSecret;
-    protected redirectURL: string = "http://localhost/auth/discord";
+    protected redirectURL: string = DiscordAuth.redirectUrlPrefix + "auth/discord";
     protected identifyURL: string = "https://discordapp.com/api/users/@me";
     protected scope: string = "identify";
     private static instance: DiscordAuth;
-    public static readonly provider = "DISCORD";
+    public static readonly provider: string = "DISCORD";
 
     private constructor() {
         super();
