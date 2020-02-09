@@ -1,5 +1,4 @@
 import * as express from 'express';
-import expressWs from 'express-ws';
 
 import { app } from '../../framework/core/app';
 import { BaseConfig } from '../config/base.config';
@@ -9,12 +8,11 @@ import { mainController } from '../controllers/main.controller';
 import { courseController } from '../controllers/course.controller';
 import { userController } from '../controllers/user.controller';
 import { apiController } from '../controllers/api.controller';
-import { websocketHandler } from '../controllers/websocket.controller';
 import { SecurityUtil } from '../utils/security.util';
 import { ExpressUtil } from '../utils/express.util';
+import { CourseWebsocketController } from '../controllers/websocket/course.ws';
 
-const webSocketInstance = expressWs(app);
-websocketHandler(webSocketInstance.app);
+new CourseWebsocketController().init();
 
 app.set('views', [BaseConfig.viewsLocation, BaseConfig.viewsLocation]);
 app.use('/static', express.static(BaseConfig.staticLocation));

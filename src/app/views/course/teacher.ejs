@@ -55,7 +55,7 @@
         <div data-role="splitter" class="h-100" data-split-sizes="20, 80" data-min-sizes="350,700">
             <div class="d-flex flex-justify-center flex-align-center forceHidden" id="sidebarContent">
                 <div class="sidebarContentView" id="chatView">
-                    <div id="courseChat" data-role="chat" data-name="<%=session.userLoginId%>" data-on-send="handleChatSend"></div>
+                    <div id="courseChat" data-role="chat" data-name="<%=session.userName%>" data-on-send="handleChatSend"></div>
                 </div>
                 <div class="sidebarContentView" id="settingsView">Settings</div>
                 <div class="sidebarContentView" id="forkView">Fork</div>
@@ -107,7 +107,7 @@ $(document).ready(() => {
         clearTimeout(delay);
     });
 
-    ws = new WebSocket("ws://localhost:80/course/<%=course.data.courseId%>");
+    ws = new WebSocket("ws://<%=context.hostName%>/course/<%=course.data.courseId%>");
     ws.addEventListener('message', data => {
         let message = JSON.parse(data.data);
         switch (message.channel) {
