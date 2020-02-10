@@ -107,7 +107,7 @@ $(document).ready(() => {
         clearTimeout(delay);
     });
 
-    ws = new WebSocket("ws://<%=context.hostName%>/course/<%=course.data.courseId%>");
+    ws = new WebSocket("ws://<%=context.hostName%>/ws/course/<%=course.data.courseId%>");
     ws.addEventListener('message', data => {
         let message = JSON.parse(data.data);
         switch (message.channel) {
