@@ -2,31 +2,16 @@
 <%-include('partial/navbar')%>
 
 <div class="container">
-    <table class="table striped table-border mt-4" data-role="table" data-cls-table-top="row flex-nowrap" 
-        data-cls-search="cell-md-8" data-cls-rows-count="cell-md-4">
-        <thead>
-            <tr>
-                <th data-sortable="true">Course</th>
-                <th>Description</th>
-                <th data-sortable="true">Views</th>
-                <th data-sortable="true">Created</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let course of courses) { %>
-                <tr>
-                    <td><%=course.data.name%></td>
-                    <td><%=course.data.description%></td>
-                    <td><%=0%></td>
-                    <td><%=dateFormat(course.data.createdStamp)%></td>
-                    <td>
-                        <a class="button" href="/course/<%=course.data.courseId%>">
-                            <span class="mif-user-plus"></span> Join Course
-                        </a>
-                    </td>
-                </tr>
+    <div class="row">
+        <% if (!context.courses || !context.courses.length) { %>
+            There are no courses available for this engine.
+        <% } else { %>
+            <% for (const courseData of context.courses || []) { %>
+                <% const course = courseData.data; %>
+                <div class="cell-md-3">
+                    <%-include("partial/courseCard", Object.assign(context, {course: course}))%>
+                </div>
             <% } %>
-        </tbody>
-    </table>
+        <% } %>
+    </div>
 </div>

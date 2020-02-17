@@ -1,14 +1,165 @@
 <%-include('partial/head')%>
 <%-include('partial/navbar')%>
 
-<div class="container pt-5">
-    <div class="tiles-grid">
-        <% for(let engine of engines) { %>
-            <div data-size="medium" data-role="tile" class="bg-<%=engine.data.colour%>" onclick="javascript:location.href='/course/list/<%=engine.data.engineId%>'">
-                <span class="branding-bar"><%=engine.data.name%></span>
-                <img src="<%=engine.data.picture%>" class="icon">
-                <span class="badge-top"><%=engine.data.courses%></span>
+<head>
+    <script src="/static/ace-builds/src/ace.js"></script>
+    <script src="/static/client.js"></script>
+</head>
+
+<style>
+.forceHidden {
+    display: none!important;
+}
+
+.sidebarContentView {
+    width: 100%;
+    height: 100%
+}
+
+.chat {
+    height: calc(100vh - var(--appbar-height))!important;
+}
+
+#chatViewToggleBadge {
+    display: none;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="full-editor" id="fullEditor">
+        <div class="editor-options">
+            <ul class="sidenav-simple h-auto " id="teacherIDEActions">
+                <li>
+                    <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run (Ctrl + Enter)">
+                        <span class="mif-play icon"></span>
+                    </a>
+                </li>
+                <li id="structureViewToggle">
+                    <a href="javascript:showSideMenu('#structureView')" title="Project Structure">
+                        <span class="mif-folder-open icon"></span>
+                    </a>
+                </li>
+                <li id="chatViewToggle">
+                    <a href="javascript:showSideMenu('#chatView')" title="Chat">
+                        <span class="mif-bubble icon"></span>
+                        <span class="badge inside bg-red fg-white" id="chatViewToggleBadge">0</span>
+                    </a>
+                </li>
+                <li id="settingsViewToggle">
+                    <a href="javascript:showSideMenu('#settingsView')" title="Project Settings">
+                        <span class="mif-cog icon"></span>
+                    </a>
+                </li>
+                <li id="forkViewToggle">
+                    <a href="javascript:showSideMenu('#forkView')" title="Fork">
+                        <span class="mif-flow-branch icon"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div data-role="splitter" class="h-100" data-split-sizes="20, 80" data-min-sizes="350,700">
+            <div class="d-flex flex-justify-center flex-align-center forceHidden" id="sidebarContent">
+                <div class="sidebarContentView" id="chatView">
+                    <div id="courseChat" data-role="chat" data-name="<%=session.userName%>" data-on-send="handleChatSend"></div>
+                </div>
+                <div class="sidebarContentView" id="settingsView">Settings</div>
+                <div class="sidebarContentView" id="forkView">Fork</div>
+                <div class="sidebarContentView" id="structureView">Structure</div>
             </div>
-        <% } %>
+            <div data-role="splitter" data-split-mode="vertical" data-gutter-size="5" data-min-sizes="200" data-split-sizes="70, 30">
+                <div class="d-flex flex-justify-center flex-align-center">
+                    <div class="editor" id="teacherIDE"></div>
+                </div>
+                <div class="d-flex flex-justify-center flex-align-center">
+                    <pre class="console" id="teacherConsole">Result: </pre>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+let aceEditor;
+let ws;
+let deltas = [];
+
+$(document).ready(() => {
+    aceEditor = ace.edit($("#teacherIDE").get(0), {
+        mode: "ace/mode/javascript",
+        selectionStyle: "text",
+        theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
+        showPrintMargin: false,
+        readOnly: <%= course.data.createdBy !== session.userLoginId %>
+    })
+
+    aceEditor.commands.addCommand({
+        name: "execute",
+        bindKey: {win: "Ctrl-Enter", mac: "Command-Enter"},
+        exec: () => {
+            executeScript(aceEditor.getValue(), $('#teacherConsole'));
+        }
+    })
+
+    aceEditor.on("change", delta => {
+        deltas.push({
+            timestamp: new Date().getTime(),
+            delta: delta
+        })
+    })
+
+    let delay = false;
+    aceEditor.getSession().on('change', function() {
+        clearTimeout(delay);
+    });
+
+    ws = new WebSocket("ws://<%=context.hostName%>/ws/course/<%=course.data.courseId%>");
+    ws.addEventListener('message', data => {
+        let message = JSON.parse(data.data);
+        switch (message.channel) {
+            case "chat":
+                message.position = message.userLoginId == "<%=session.userLoginId%>" ? "right" : "left";
+                message.time = new Date(message.time);
+                $("#courseChat").data("chat").add(message);
+                break;
+        }
+    });
+});
+
+function applyDelta(current, deltas) {
+    aceEditor.getSession().getDocument().applyDelta(current.delta);
+    if(deltas.length) {
+        setTimeout(() => {
+            applyDelta(deltas[0], deltas.slice(1));
+        }, deltas[0].timestamp - current.timestamp)
+    }
+}
+
+function handleChatSend(message) {
+    message.channel = "chat";
+    message.userLoginId = "<%=session.userLoginId%>";
+    ws.send(JSON.stringify(message));
+}
+
+// function log() {
+//     console.log(aceEditor.getSession().getValue());
+// }
+
+function showSideMenu(view) {
+    let viewEl = $("#sidebarContent .sidebarContentView" + view);
+    let sidebarHidden = () => { return $("#sidebarContent").hasClass("forceHidden") };
+    let viewActive = !(viewEl.is(":hidden"));
+
+    if (sidebarHidden()) {
+        $("#sidebarContent").removeClass("forceHidden");
+    } else if (viewActive) {
+        $("#sidebarContent").addClass("forceHidden");
+    }
+
+    $("#sidebarContent .sidebarContentView").hide();
+    viewEl.show();
+    $("#teacherIDEActions li.active").removeClass("active");
+    if (!sidebarHidden()) {
+        $(view + "Toggle").addClass("active");
+    }
+}
+</script>

@@ -1,0 +1,18 @@
+<%-include('partial/head')%>
+<%-include('partial/navbar')%>
+
+<div class="container pt-5">
+    <div class="tiles-grid">
+        <% if (!context.engines) { %>
+            There are no engines enabled yet.
+        <% } else { %>
+            <% for(let engine of context.engines || []) { %>
+                <div data-size="medium" data-role="tile" class="bg-<%=engine.data.colour%>" onclick="javascript:location.href='/course/list/<%=engine.data.engineId%>'">
+                    <span class="branding-bar"><%=engine.data.name%></span>
+                    <img src="<%=engine.data.picture%>" class="icon">
+                    <span class="badge-top"><%=engine.data.courses%></span>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</div>

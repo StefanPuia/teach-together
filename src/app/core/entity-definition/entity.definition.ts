@@ -32,15 +32,18 @@ const EntityDefinitions: Array<EntityDefinition> = [{
     "type": "TABLE",
     "fields": [{
         "name": "course_id",
-        "type": EntityEngine.DATA_TYPE.ID_SHORT,
-        "notNull": true,
-        "unique": true
+        "type": EntityEngine.DATA_TYPE.NUMBER,
+        "autoIncrement": true,
+        "primaryKey": true
     }, {
         "name": "name",
         "type": EntityEngine.DATA_TYPE.DESCRIPTION,
         "notNull": true
     }, {
         "name": "description",
+        "type": EntityEngine.DATA_TYPE.DESCRIPTION
+    }, {
+        "name": "picture",
         "type": EntityEngine.DATA_TYPE.DESCRIPTION
     }, {
         "name": "engine_id",
@@ -68,6 +71,37 @@ const EntityDefinitions: Array<EntityDefinition> = [{
         "reference": {
             "field": "engine_id",
             "table": "engine"
+        },
+        "onDelete": "restrict",
+        "onUpdate": "restrict"
+    }]
+}, {
+    "name": "user_login_course",
+    "type": "TABLE",
+    "fields": [{
+        "name": "user_login_id",
+        "type": EntityEngine.DATA_TYPE.NUMBER,
+        "primaryKey": true
+    }, {
+        "name": "course_id",
+        "type": EntityEngine.DATA_TYPE.NUMBER,
+        "primaryKey": true
+        }],
+    "foreignKeys": [{
+        "name": "user_login_course_user",
+        "field": "user_login_id",
+        "reference": {
+            "field": "user_login_id",
+            "table": "user_login"
+        },
+        "onDelete": "restrict",
+        "onUpdate": "restrict"
+    }, {
+        "name": "user_login_course_course",
+        "field": "course_id",
+        "reference": {
+            "field": "course_id",
+            "table": "course"
         },
         "onDelete": "restrict",
         "onUpdate": "restrict"

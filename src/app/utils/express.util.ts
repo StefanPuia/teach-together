@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { Screen } from '../core/screen';
 import BaseUtil from './base.util';
 import { DebugUtil } from '../../framework/utils/debug.util';
+import { ExpressUtil as FrameworkExpressUtil } from '../../framework/utils/express.util';
 
-export abstract class ExpressUtil {
+export abstract class ExpressUtil extends FrameworkExpressUtil {
     public static handleNotFound(req: Request, res: Response) {
         Screen.create('404', req, res).renderQuietly();
     }

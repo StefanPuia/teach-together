@@ -74,3 +74,10 @@ body {
     height: 100%;
     width: 100%;
 }
+
+.stroke {
+    color: black;
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}

@@ -1,0 +1,14 @@
+<div class="card image-header">
+    <div class="card-header stroke" style="background-image: url(<%=course.picture%>); font-size: 1.5em;">
+        <%=course.name%>
+    </div>
+    <div class="card-content p-2">
+        <p class="fg-gray">Created <%=dateFormat(course.createdStamp, context.displayDateFormat)%></p>
+        <%=course.description%>
+    </div>
+    <div class="card-footer">
+        <a class="button primary" href="/course/join/<%=course.courseId%>">
+            <span class="mif-user-plus"></span> <%= context.buttonText || "Begin Course" %>
+        </a>
+    </div>
+</div>
