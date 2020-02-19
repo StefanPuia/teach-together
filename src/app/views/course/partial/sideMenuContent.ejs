@@ -1,0 +1,26 @@
+<div class="d-flex flex-justify-center flex-align-center forceHidden" id="sidebarContent">
+    <div class="sidebarContentView" id="chatView">
+        <div id="courseChat" data-role="chat" data-name="<%=session.userName%>" data-on-send="handleChatSend"></div>
+    </div>
+    <div class="sidebarContentView" id="forkView">Fork</div>
+    <div class="sidebarContentView" id="structureView">Structure</div>
+
+    <% if (context.isOwner) { %>
+        <script>
+            
+        </script>
+        <div class="sidebarContentView" id="settingsView">
+            <ul class="items-list">
+                <li>
+                    <img class="avatar" src="images/me.jpg">
+                    <span class="label">List item</span>
+                    <span class="second-action mif-key fg-orange"></span>
+                </li>
+                <li class="item ">
+                    <img class="avatar" src="images/me.jpg">
+                    <span class="label">List item</span>
+                </li>
+            </ul>
+        </div>
+    <% } %>
+</div>

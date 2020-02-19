@@ -3,7 +3,7 @@
 
 <div class="container">
     <h1>Your courses</h1>
-    <% if (!context.courses) { %>
+    <% if ((context.courses || []).length == 0) { %>
         You have not joined any course yet. Start by first choosing a <a href="/course">language</a>.
     <% } else { %>
         <div class="row">

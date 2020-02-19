@@ -1,0 +1,90 @@
+<script>
+    let ownerConnected = "<%=context.ownerConnected || false %>" === "true";
+    let deltas = [];
+
+    function sendEditorData() {
+        if (!ownerConnected) {
+            sendWSMessage({
+                channel: "editor",
+                editor: aceEditor.getValue(),
+                pos: aceEditor.getCursorPosition(),
+                sel: aceEditor.getSession().getSelection().getAllRanges()
+            });
+        }
+    }
+
+    $(document).ready(() => {
+        if (ownerConnected) {
+            aceEditor.setReadOnly(true);
+        }
+
+        aceEditor.on("change", delta => {
+            if (!ownerConnected) {
+                deltas.push({
+                    t: new Date().getTime(),
+                    d: delta
+                });
+                sendEditorData();
+            }
+        });
+
+        aceEditor.getSession().getSelection().on("changeCursor", sendEditorData);
+        aceEditor.getSession().getSelection().on("changeSelection", sendEditorData);
+
+        aceEditor.commands.addCommand({
+            name: "execute",
+            bindKey: {
+                win: "Ctrl-Enter",
+                mac: "Command-Enter"
+            },
+            exec: () => {
+                executeScript(aceEditor.getValue(), $('#teacherConsole'))
+                    .then((result) => {
+                        sendWSMessage({
+                            channel: "result",
+                            result: result
+                        });
+                    })
+            }
+        });
+
+        setInterval(() => {
+            if (!ownerConnected) {
+                appendDeltas();
+            }
+        }, 5000);
+    })
+
+    function appendDeltas() {
+        const current = deltas.slice();
+        deltas = [];
+        if (current.length) {
+            const payload = {
+                timestamp: new Date().getTime(),
+                deltas: JSON.stringify(current),
+                value: aceEditor.getValue()
+            };
+            callServer("/api/append/<%=course.courseId%>", {
+                spinner: false,
+                body: JSON.stringify(payload)
+            }).catch(err => {
+                console.error(err);
+                deltas = current.concat(deltas);
+            });
+        }
+    }
+
+    function buildMembersList(members) {
+        const $list = $("#settingsView ul");
+        $list.empty();
+        for (const member of members) {
+            const $li = $(`<li></li>`);
+            $li.append($(`<img class="avatar" src="${member.picture || defaultChatPicture}">`));
+            $li.append($(`<span class="label">${member.name}</span>`));
+            if (member.isOwner) {
+                $li.append($(`<span class="second-action mif-key fg-amber"></span>`));
+            }
+            $list.append($li);
+        }
+    }
+</script>

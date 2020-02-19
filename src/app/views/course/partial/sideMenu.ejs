@@ -1,0 +1,32 @@
+<div class="editorOptions">
+    <ul class="sidenav-simple h-auto " id="teacherIDEActions">
+        <li>
+            <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run (Ctrl + Enter)">
+                <span class="mif-play icon"></span>
+            </a>
+        </li>
+        <!-- <li id="structureViewToggle">
+                    <a href="javascript:showSideMenu('#structureView')" title="Project Structure">
+                        <span class="mif-folder-open icon"></span>
+                    </a>
+                </li> -->
+        <li id="chatViewToggle">
+            <a href="javascript:showSideMenu('#chatView')" title="Chat">
+                <span class="mif-bubble icon"></span>
+                <span class="badge inside bg-red fg-white" id="chatViewToggleBadge">0</span>
+            </a>
+        </li>
+        <% if (context.isOwner) { %>
+            <li id="settingsViewToggle">
+                <a href="javascript:showSideMenu('#settingsView')" title="Project Settings">
+                    <span class="mif-cog icon"></span>
+                </a>
+            </li>
+        <% } %>
+        <!-- <li id="forkViewToggle">
+                    <a href="javascript:showSideMenu('#forkView')" title="Fork">
+                        <span class="mif-flow-branch icon"></span>
+                    </a>
+                </li> -->
+    </ul>
+</div>

@@ -12,7 +12,7 @@ import { SecurityUtil } from '../utils/security.util';
 import { ExpressUtil } from '../utils/express.util';
 import { CourseWebsocketController } from '../controllers/websocket/course.ws';
 
-new CourseWebsocketController().init();
+CourseWebsocketController.init();
 
 app.set('views', [BaseConfig.viewsLocation, BaseConfig.viewsLocation]);
 app.use('/static', express.static(BaseConfig.staticLocation));
