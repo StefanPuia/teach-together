@@ -5,6 +5,7 @@ import { EntityQuery } from '../../framework/core/engine/entity/entity.query';
 import { GenericValue } from '../../framework/core/engine/entity/generic.value';
 import { EntityDynamicQuery } from '../../framework/core/engine/entity/entity.dynamic.query';
 import { CourseWebsocketController } from './websocket/course.ws';
+import { ServiceUtil } from '../../framework/utils/service.util';
 
 const courseController: Router = Router();
 const safe = ExpressUtil.safeMiddleware;
@@ -51,6 +52,7 @@ courseController.get('/join/:courseId', safe(async (req: Request, res: Response)
 }));
 
 courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
+    const user = await EntityQuery.from("UserLogin").where({ "userLoginId": req.session!.userLoginId }).cache().queryFirst();
     const course = await EntityQuery.from("Course").where({ "courseId": req.params.courseId }).cache().queryFirst();
     const owners = await EntityQuery.from("CourseOwner").where({ "courseId": course.get("courseId") }).cache().queryList();
     const latest = await EntityQuery.from("CourseSnapshot").where({ "courseId": course.get("courseId") }).orderBy("-timestamp").queryFirst();
@@ -83,6 +85,7 @@ courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
         isOwner: !!owners.find(own => own.get("userLoginId") === req.session!.userLoginId),
         ownerConnected: ownerConnected,
         editorValue: latest ? latest.get("editorValue") : "",
+        userAvatar: user ? user.get("picture") : undefined,
         chatLog: messages
     }).renderQuietly();
 }));

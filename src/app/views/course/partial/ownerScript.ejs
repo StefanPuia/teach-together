@@ -75,14 +75,14 @@
     }
 
     function buildMembersList(members) {
-        const $list = $("#settingsView ul");
+        const $list = $("#usersView ul");
         $list.empty();
         for (const member of members) {
             const $li = $(`<li></li>`);
             $li.append($(`<img class="avatar" src="${member.picture || defaultChatPicture}">`));
             $li.append($(`<span class="label">${member.name}</span>`));
             if (member.isOwner) {
-                $li.append($(`<span class="second-action mif-key fg-amber"></span>`));
+                $li.append($(`<span class="second-action mif-key fg-amber" title="Course Owner"></span>`));
             }
             $list.append($li);
         }

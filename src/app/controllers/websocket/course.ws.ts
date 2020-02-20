@@ -43,7 +43,6 @@ export class CourseWebsocketController extends WSController {
                     this.sendResponse({ channel: "ownerDC", userLoginId: userLoginId }, ws);
                 }
                 this.sendOwnersListOfMembers(courseId);
-                console.log("sending open")
             }, 1000);
         } catch (err) {
             DebugUtil.logError(err, CourseWebsocketController.module, req.path);
@@ -85,14 +84,13 @@ export class CourseWebsocketController extends WSController {
             const courseId = req.params.courseId;
             const userLoginId = req.session!.userLoginId;
             const isOwner = await CourseWebsocketController.isCourseOwner(courseId, userLoginId);
-            const closedIndex = this.courses[courseId].findIndex(client => { client.ws === ws });
+            const closedIndex = this.courses[courseId].findIndex(client => client.ws === ws);
             const nextOwner = await this.findOwnerConnected(courseId);
             this.courses[courseId].splice(closedIndex, 1);
             if (isOwner && nextOwner) {
                 this.sendResponse({ channel: "ownerDC", userLoginId: userLoginId }, nextOwner.ws);
             }
             this.sendOwnersListOfMembers(courseId);
-            console.log("sending close")
         } catch (err) {
             DebugUtil.logError(err, CourseWebsocketController.module, req.path);
         }
@@ -156,9 +154,10 @@ export class CourseWebsocketController extends WSController {
 
     private async sendOwnersListOfMembers(courseId: string) {
         const clients = this.courses[courseId];
-        const condition = ConditionBuilder.create().in("userLoginId", clients.map(client => client.userLoginId));
-        const users = await EntityQuery.from("UserLogin").where(condition).cache().queryList();
-        const members = this.courses[courseId].map(client => {
+        const userIds: Array<any> = clients.map(client => client.userLoginId).filter((value, index, self) => self.indexOf(value) === index);
+        const condition = ConditionBuilder.create().in("userLoginId", userIds);
+        const users = clients.length ? await EntityQuery.from("UserLogin").where(condition).cache().queryList() : [];
+        const members = clients.map(client => {
             const user = users.find(user => user.get("userLoginId") == client.userLoginId);
             return {
                 id: client.userLoginId,
@@ -167,7 +166,7 @@ export class CourseWebsocketController extends WSController {
                 name: user ? user.get("fullName") || user.get("userName") : ""
             }
         })
-        this.sendResponse({ channel: "members", members: members }, this.courses[courseId],
+        this.sendResponse({ channel: "members", members: members }, clients,
             (client: WebSocketEntry) => client.isOwner && client.ws.readyState === client.ws.OPEN);
     }
 }

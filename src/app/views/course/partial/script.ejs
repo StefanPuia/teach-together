@@ -39,6 +39,7 @@
 
         ws.addEventListener('open', () => {
             $("#courseChat input").removeAttr("disabled");
+            $("#networkStatus").addClass("forceHidden");
         })
 
         ws.addEventListener('message', data => {
@@ -96,7 +97,7 @@
 
         ws.addEventListener('close', () => {
             $("#courseChat input").attr("disabled", "disabled");
-            ws.readyState = ws.CONNECTING;
+            $("#networkStatus").removeClass("forceHidden");
             setTimeout(() => {
                 connectWS();
             }, 5000);

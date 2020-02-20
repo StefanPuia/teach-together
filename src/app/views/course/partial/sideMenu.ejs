@@ -1,4 +1,4 @@
-<div class="editorOptions">
+<div id="editorOptions">
     <ul class="sidenav-simple h-auto " id="teacherIDEActions">
         <li>
             <a href="javascript:executeScript(aceEditor.getValue(), $('#teacherConsole'))" title="Run (Ctrl + Enter)">
@@ -17,6 +17,11 @@
             </a>
         </li>
         <% if (context.isOwner) { %>
+            <li id="usersViewToggle">
+                <a href="javascript:showSideMenu('#usersView')" title="Connected Users">
+                    <span class="mif-users icon"></span>
+                </a>
+            </li>
             <li id="settingsViewToggle">
                 <a href="javascript:showSideMenu('#settingsView')" title="Project Settings">
                     <span class="mif-cog icon"></span>
@@ -28,5 +33,8 @@
                         <span class="mif-flow-branch icon"></span>
                     </a>
                 </li> -->
+        <li id="networkStatus" class="forceHidden" title="Connection to server lost. Reconnecting...">
+            <span class="mif-wifi-off icon fg-red"></span>
+        </li>
     </ul>
 </div>
