@@ -1,0 +1,163 @@
+<script>
+    let aceEditor;
+    let ws;
+    let unreadMessages = 0;
+    let currentSideView;
+
+    $(document).ready(() => {
+        aceEditor = ace.edit($("#teacherIDE").get(0), {
+            mode: "ace/mode/javascript",
+            selectionStyle: "text",
+            theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
+            showPrintMargin: false,
+            readOnly: "<%= context.isOwner %>" !== "true"
+        })
+        aceEditor.setValue(`<%=context.editorValue || ''%>`);
+        const chatLog = JSON.parse(`<%-JSON.stringify(context.chatLog || [])%>`);
+        chatLog.forEach(cl => {
+            cl.time = new Date(cl.time);
+            cl.avatar = cl.avatar || defaultChatPicture;
+            $("#courseChat").data("chat").add(cl);
+            if (cl.ownerMessage) {
+                $("#" + cl.id).addClass("ownerMessage");
+            }
+        });
+
+        setInterval(() => {
+            if (messageQueue.length) {
+                sendWSMessage(messageQueue.shift(), true);
+            }
+        }, 500);
+
+        connectWS();
+        showSideMenu('#chatView');
+    });
+
+    function connectWS() {
+        $("#courseChat input").attr("disabled", "disabled");
+        ws = new WebSocket("ws://<%=context.hostName%>/ws/course/<%=course.courseId%>");
+
+        ws.addEventListener('open', () => {
+            $("#courseChat input").removeAttr("disabled");
+            $("#networkStatus").addClass("forceHidden");
+        })
+
+        ws.addEventListener('message', data => {
+            let message = JSON.parse(data.data);
+            switch (message.channel) {
+                case "chat":
+                    message.position = message.userLoginId == "<%=session.userLoginId%>" ? "right" : "left";
+                    message.time = new Date(message.time);
+                    if (message.userLoginId != "<%=session.userLoginId%>") {
+                        $("#courseChat").data("chat").add(message);
+                    }
+                    if (currentSideView !== "#chatView") {
+                        unreadMessages++;
+                    }
+                    updateChatBadge();
+                    if (message.ownerMessage) {
+                        $("#" + message.id).addClass("ownerMessage");
+                    }
+                    break;
+                
+                case "result":
+                    if (message.userLoginId != "<%=session.userLoginId%>") {
+                        $('#teacherConsole').text(message.result);
+                    }
+                    break;
+
+                case "editor":
+                    if (message.userLoginId != "<%=session.userLoginId%>") {
+                        aceEditor.setValue(message.editor);
+                        aceEditor.clearSelection();
+                        aceEditor.gotoLine(message.pos.row + 1, message.pos.column + 1);
+                        for (const sel of message.sel) {
+                            const range = new ace.Range(sel.start.row, sel.start.column, sel.end.row, sel.end.column);
+                            aceEditor.getSession().getSelection().addRange(range);
+                        }
+                    }
+                    break;
+
+                // <% if (context.isOwner) { %>
+                    case "ownerDC":
+                        if (typeof ownerConnected !== "undefined") {
+                            ownerConnected = false;
+                            aceEditor.setReadOnly(false);
+                        }
+                        break;
+
+                    case "members":
+                        if (typeof buildMembersList !== "undefined") {
+                            buildMembersList(message.members || []);
+                        }
+                    break;
+                // <% } %>
+            }
+        });
+
+        ws.addEventListener('close', () => {
+            $("#courseChat input").attr("disabled", "disabled");
+            $("#networkStatus").removeClass("forceHidden");
+            setTimeout(() => {
+                connectWS();
+            }, 5000);
+        });
+    }
+
+    function applyDelta(current, deltas) {
+        aceEditor.getSession().getDocument().applyDelta(current.delta);
+        if(deltas.length) {
+            setTimeout(() => {
+                applyDelta(deltas[0], deltas.slice(1));
+            }, deltas[0].timestamp - current.timestamp)
+        }
+    }
+
+    function handleChatSend(message) {
+        message.channel = "chat";
+        sendWSMessage(message)
+    }
+
+    const messageQueue = [];
+    function sendWSMessage(payload, force = false) {
+        payload.userLoginId = "<%=session.userLoginId%>";
+        if (ws.readyState === ws.OPEN && (messageQueue.length === 0 || force === true)) {
+            ws.send(JSON.stringify(payload));
+        } else {
+            messageQueue.push(payload);
+        }
+    }
+
+    function updateChatBadge() {
+        $("#chatViewToggleBadge").text(unreadMessages);
+        $("#chatViewToggleBadge").hide();
+        if (unreadMessages > 0) {
+            $("#chatViewToggleBadge").show();
+        }
+    }
+
+    function showSideMenu(view) {
+        let viewEl = $("#sidebarContent .sidebarContentView" + view);
+        let sidebarHidden = () => { return $("#sidebarContent").hasClass("forceHidden") };
+        let viewActive = !(viewEl.is(":hidden"));
+
+        if (sidebarHidden()) {
+            $("#sidebarContent").removeClass("forceHidden");
+        } else if (viewActive) {
+            $("#sidebarContent").addClass("forceHidden");
+        }
+
+        $("#sidebarContent .sidebarContentView").hide();
+        viewEl.show();
+        $("#teacherIDEActions li.active").removeClass("active");
+        if (!sidebarHidden()) {
+            $(view + "Toggle").addClass("active");
+        }
+
+        currentSideView = sidebarHidden() ? undefined : view;
+        if (currentSideView === "#chatView") unreadMessages = 0;
+        updateChatBadge();
+    }
+
+    const defaultChatPicture = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2NjIpLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAUABQAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+t+KKPxo/GgA70Yo/Gj8aADFH4VesdC1HUl3WtjcXCf344yV/PGKW+0HUtNXddWNzbp/fkjIX88YoAofhR+FH40fjQAfhR+FH40fjQAUUUUAFepeAPh5D9li1LVYhK8g3Q27j5VXszDuT6f5HA+FtOXVvEWn2rjMcko3j1UckfkDX0MBgYHAoARVCKFUBVHAA6ClZQwKkZBGCDS0UAec+Pvh3BJay6lpUQimjBeW3QYVx3Kjsfbv/PyqvpuvnvxfpqaT4l1C1QbY0lJUDsrfMB+RoAyKKKKACiiigDa8GXq6f4p02eQgIJQpJ7Bvlz+tfQP4V8yDg17P4A8cw65ZxWV5IE1KMbfmP+uA7j39R+NAHaUfhSUUAL+FeA+OL1NQ8WalNGQU83YCO+0Bf6V6b498cQ6BZyWlrIJNSkXaApz5QP8AEff0FeKk5OTyTQAUUUUAH40fjRU1naTX93DbQIXmlYIijuTQBc0Dw/eeI74W1mm49XkbhUHqTXsHhz4eaXoCpI8YvbscmaYZAP8Asr0H8/etHwv4cg8M6XHaxANIfmllxy7dz9PStigA/Gk/GlooA5bxJ8PdL19XkWMWd43PnwjGT/tL0P8AP3rx/X/D954cvjbXibT1SReVceoNfRFZHijw5B4m0uS1lAWQfNFLjlG7H6etAHz5+NH41NeWk1hdzW06FJonKMp7EGoaACvQfhBowudTudRkXK2y7I8j+Nup/Afzrz6vafhRaCDwmkgHM8zufwO3/wBloA7Kiij8KACkpaSgBaSj8KKAPJvi/owttTttRjXC3K7JMf3l6H8R/KvPq9p+K1qJ/CbyEcwTI4P1O3/2avFqAP/Z"
+</script>

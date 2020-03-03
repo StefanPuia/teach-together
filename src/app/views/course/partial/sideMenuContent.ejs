@@ -1,0 +1,54 @@
+<div class="d-flex flex-justify-center flex-align-center forceHidden" id="sidebarContent">
+    <div class="sidebarContentView" id="chatView">
+        <div id="courseChat" data-role="chat"
+                data-name="<%=session.userName%>"
+                <% if (context.userAvatar) { %>data-avatar="<%=context.userAvatar%>"<% } %>
+                data-on-send="handleChatSend"></div>
+    </div>
+    <div class="sidebarContentView" id="forkView">Fork</div>
+
+    <% if (context.isOwner) { %>
+        <div class="sidebarContentView" id="structureView">Structure</div>
+
+        <div class="sidebarContentView" id="settingsView">
+            <div data-role="accordion" data-one-frame="true" data-show-active="true">
+                <div class="frame active">
+                    <div class="heading">Chat</div>
+                    <div class="content">
+                        <div class="p-2">
+                            <button class="button alert">Remove all chat messages</button>
+                            <button class="button yellow mt-2">Remove chat messages from non-owners</button>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="frame">
+                    <div class="heading">Recording</div>
+                    <div class="content">
+                        <div class="p-2">Wildly open a starship. Belay, ye small wench- set...</div>
+                    </div>
+                </div>
+                <div class="frame">
+                    <div class="heading">Playback</div>
+                    <div class="content">
+                        <div class="p-2">Bitter turkey can be made tasty by brushing with...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebarContentView" id="usersView">
+            <ul class="items-list">
+                <li>
+                    <img class="avatar" src="images/me.jpg">
+                    <span class="label">List item</span>
+                    <span class="second-action mif-key fg-orange"></span>
+                </li>
+                <li class="item ">
+                    <img class="avatar" src="images/me.jpg">
+                    <span class="label">List item</span>
+                </li>
+            </ul>
+        </div>
+    <% } %>
+</div>

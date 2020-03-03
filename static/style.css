@@ -1,5 +1,6 @@
 :root {
     --appbar-height: 52px;
+    --ui-colour: #f8f8f8;
 }
 
 .container,
@@ -43,20 +44,41 @@ body {
     height: 60px;
 }
 
-.full-editor {
+#mainEditorBody {
     display: grid;
     width: 100vw;
     height: calc(100vh - var(--appbar-height));
     grid-template-columns: auto 1fr;
+    grid-template-areas: "editorOptions fullEditor";
 }
 
-.full-editor-no-console {
+#mainEditorBody.playback {
     display: grid;
     width: 100vw;
     height: calc(100vh - var(--appbar-height));
     grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr 50px;
+    grid-template-areas: "editorOptions fullEditor"
+        "bottomControls bottomControls";
 }
 
+#editorOptions {
+    grid-area: editorOptions;
+    background-color: var(--ui-colour);
+}
+
+#fullEditor {
+    grid-area: fullEditor;
+}
+
+#fullEditor>div:first-child {
+    height: calc(100vh - var(--appbar-height));
+    overflow-y: auto;
+}
+
+#bottomControls {
+    grid-area: bottomControls;
+}
 
 .editor {
     font-size: 16px;
