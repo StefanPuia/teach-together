@@ -1,4 +1,4 @@
-import BaseUtil from '../../utils/base.util';
+import { BaseUtil } from '../../utils/base.util';
 import { ServiceStorage } from '../../../framework/core/engine/service.engine';
 
 const CourseServices: ServiceStorage = {

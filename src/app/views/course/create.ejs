@@ -1,0 +1,59 @@
+<%-include('partial/head')%>
+<%-include('partial/navbar')%>
+
+<div class="container">
+    <h1>Create Course</h1>
+    <form method="POST">
+        <div class="grid">
+            <div class="row">
+                <% if(typeof error !== "undefined") { %>
+                <div class="cell-md-12">
+                    <div class="remark alert">
+                        <%=error%>
+                    </div>
+                </div>
+                <%}%>
+                <div class="cell-md-12">
+                    <div class="form-group">
+                        <label>Title <span class="fg-red">*</span></label>
+                        <input type="text" required name="courseTitle" placeholder="Course Title" />
+                    </div>
+                </div>
+                <div class="cell-md-12">
+                    <div class="form-group">
+                        <label>Engine <span class="fg-red">*</span></label>
+                        <select data-role="select" name="courseEngine" required>
+                            <% for (const engine of context.engines || []) { %>
+                                <option value="<%=engine.engineId%>"><%=engine.name%></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="cell-md-12">
+                    <div class="form-group">
+                        <label>Picture <span class="fg-red">*</span></label>
+                        <input type="text" required name="coursePicture" placeholder="Picture URL" />
+                    </div>
+                </div>
+                <div class="cell-md-12">
+                    <div class="form-group">
+                        <label>Description <span class="fg-red">*</span></label>
+                        <textarea data-role="textarea" data-auto-size="true" data-max-height="200" required
+                            name="courseDescription"></textarea>
+                    </div>
+                </div>
+                <div class="cell-md-12">
+                    <div class="form-group">
+                        <label>Additional Owners</label>
+                        <input type="text" data-role="taginput" name="courseOwners">
+                    </div>
+                </div>
+                <div class="cell-md-12 mt-3">
+                    <div class="form-group">
+                        <button class="button success">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

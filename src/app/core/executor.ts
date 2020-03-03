@@ -6,10 +6,36 @@ import { Spawner } from './spawner';
 import { DebugUtil } from '../../framework/utils/debug.util';
 
 export default abstract class Executor {
+    public static execute(engine: String, req: Request, res: Response) {
+        switch (engine) {
+            case "nodejs":
+                this.executeJavaScript(req, res);
+                break;
+            
+            case "python3":
+                this.executePython(req, res);
+                break;
+        
+            default:
+                throw new Error(`Engine '${engine}' is not defined.`);
+                break;
+        }
+    }
+
     public static executeJavaScript(req: Request, res: Response) {
         const fileName: string = path.join(__dirname, "../../../spawner/", this.getFileName("js"));
         fs.writeFileSync(fileName, ExecutorWrapper.javascript(req.body.code));
         const spawner = new Spawner("node", fileName);
+        this.handleProcess(spawner, req, res);
+        spawner.onExit(() => {
+            fs.unlinkSync(fileName);
+        })
+    }
+
+    public static executePython(req: Request, res: Response) {
+        const fileName: string = path.join(__dirname, "../../../spawner/", this.getFileName("py"));
+        fs.writeFileSync(fileName, req.body.code);
+        const spawner = new Spawner("python", fileName);
         this.handleProcess(spawner, req, res);
         spawner.onExit(() => {
             fs.unlinkSync(fileName);

@@ -1,0 +1,56 @@
+<style>
+    #feedback {
+        position: fixed;
+        top: calc(100vh - 35px);
+        right: 40px;
+        z-index: 100;
+    }
+
+    #feedback.open {
+        top: calc(100vh - 435px);
+    }
+
+    #feedback>#feedbackPopUpButton {
+        height: 35px;
+    }
+
+    #feedback>#feedbackComments {
+        height: 400px;
+        width: 400px;
+        display: block;
+        padding: 10px;
+        border: solid 1px black;
+        background: white;
+    }
+
+    #feedback>#feedbackComments>#feedbackText {
+        resize: none;
+        height: 320px;
+        width: 100%;
+    }
+</style>
+<div id="feedback">
+    <a id="feedbackPopUpButton" class="button primary" href="javascript:$('#feedback').toggleClass('open');"><span
+            class="mif-user-check"></span> Feedback</a>
+    <div id="feedbackComments">
+        <textarea id="feedbackText" placeholder="Your feedback here"></textarea>
+        <br>
+        <a class="button success" href="javascript:sendFeedback();">Send Feedback</a>
+    </div>
+</div>
+
+<script>
+function sendFeedback() {
+    callServer("/feedback", {
+        body: JSON.stringify({
+            comments: $("#feedbackText").val()
+        })
+    }).then(() => {
+        $('#feedback').removeClass('open');
+        $("#feedbackText").val("");
+        alert("Thank you for the feedback!");
+    }).catch(err => {
+        alert(err);
+    })
+}
+</script>

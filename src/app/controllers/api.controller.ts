@@ -7,9 +7,10 @@ import { EntityQuery } from '../../framework/core/engine/entity/entity.query';
 const apiController: Router = Router();
 const safeJSON = ExpressUtil.safeJSONMiddleware;
 
-apiController.post('/execute/:courseId', (req: Request, res: Response) => {
-    Executor.executeJavaScript(req, res);
-})
+apiController.post('/execute/:courseId', safeJSON(async (req: Request, res: Response) => {
+    const course = await EntityQuery.from("Course").where({ "courseId": req.params.courseId }).queryFirst();
+    Executor.execute(course.get("engineId"), req, res);
+}));
 
 apiController.post('/append/:courseId', safeJSON(async (req: Request, res: Response) => {
     const course = await EntityQuery.from("Course").where({ "courseId": req.params.courseId }).queryFirst();

@@ -5,13 +5,18 @@ import { EntityQuery } from '../../framework/core/engine/entity/entity.query';
 import { GenericValue } from '../../framework/core/engine/entity/generic.value';
 import { EntityDynamicQuery } from '../../framework/core/engine/entity/entity.dynamic.query';
 import { CourseWebsocketController } from './websocket/course.ws';
-import { ServiceUtil } from '../../framework/utils/service.util';
+import { ConditionBuilder } from '../../framework/core/engine/entity/condition.builder';
+import { EntityEngine } from '../../framework/core/engine/entity/entity.engine';
 
 const courseController: Router = Router();
 const safe = ExpressUtil.safeMiddleware;
 
 courseController.get("/", safe(async (req: Request, res: Response) => {
-    const engines = await EntityQuery.from("Engine").cache().queryList();
+    const query = `select E.*, count(1) as courses
+        from engine as E
+        inner join course using(engine_id)
+        group by E.engine_id`;
+    const engines = await EntityEngine.transactPromise(query, [], true, true);
     Screen.create("course/engines", req, res).appendContext({
         headerTitle: "Courses: Engines",
         engines: engines
@@ -24,15 +29,49 @@ courseController.get("/list/:engineId", safe(async (req: Request, res: Response)
         .cache().orderBy("-createdStamp").queryList();
     Screen.create("course/list", req, res).appendContext({
         headerTitle: "Courses: " + engine.get("name"),
-        courses: courses
+        courses: courses.map(course => course.getData())
     }).renderQuietly();
 }));
 
-courseController.get('/create', (req: Request, res: Response) => {
+courseController.get('/create', safe(async (req: Request, res: Response) => {
+    const engines = await EntityQuery.from("Engine").queryList();
     Screen.create('course/create', req, res).appendContext({
-        headerTitle: "Create Course"
+        headerTitle: "Create Course",
+        engines: engines.map(eng => eng.getData())
     }).renderQuietly();
-});
+}));
+
+courseController.post('/create', safe(async (req: Request, res: Response) => {
+    const engines = await EntityQuery.from("Engine").queryList();
+    try {
+        const courseId = await new GenericValue("Course", {
+            name: req.body.courseTitle,
+            description: req.body.courseDescription,
+            picture: req.body.coursePicture,
+            engineId: req.body.courseEngine,
+            visibility: false,
+            createdBy: req.session!.userLoginId
+        }).insert();
+        const additionalOwners = (req.body.courseOwners || "").split(",");
+        const userCond = ConditionBuilder.create().in("userName", additionalOwners);
+        const users = await EntityQuery.from("UserLogin").where(userCond).queryList();
+        const ownerLoginIds = [req.session!.userLoginId].concat(users.map(user => user.get("userLoginId")));
+        const courseOwners = ownerLoginIds.map(ownerLoginId => {
+            return new GenericValue("CourseOwner", {
+                userLoginId: ownerLoginId,
+                courseId: courseId
+            })
+        });
+        await EntityEngine.insert(courseOwners);
+        res.redirect(req.baseUrl + "/" + courseId);
+    } catch (err) {
+        Screen.create('course/create', req, res).appendContext({
+            headerTitle: "Create Course",
+            engines: engines.map(eng => eng.getData()),
+            error: err.message
+        }).renderQuietly();
+    }
+}));
 
 courseController.get('/join/:courseId', safe(async (req: Request, res: Response) => {
     const course = await EntityQuery.from("Course").where({ "courseId": req.params.courseId }).queryFirst();
@@ -53,7 +92,11 @@ courseController.get('/join/:courseId', safe(async (req: Request, res: Response)
 
 courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
     const user = await EntityQuery.from("UserLogin").where({ "userLoginId": req.session!.userLoginId }).cache().queryFirst();
-    const course = await EntityQuery.from("Course").where({ "courseId": req.params.courseId }).cache().queryFirst();
+    const course = await EntityDynamicQuery.from("C", "Course")
+            .select("C.*", "E.*")
+            .innerJoin("E", "Engine", "engineId", "C.engineId")
+            .where({ "courseId": req.params.courseId })
+            .cache().queryFirst();
     const owners = await EntityQuery.from("CourseOwner").where({ "courseId": course.get("courseId") }).cache().queryList();
     const latest = await EntityQuery.from("CourseSnapshot").where({ "courseId": course.get("courseId") }).orderBy("-timestamp").queryFirst();
 

@@ -6,8 +6,7 @@
         <% if (!context.courses || !context.courses.length) { %>
             There are no courses available for this engine.
         <% } else { %>
-            <% for (const courseData of context.courses || []) { %>
-                <% const course = courseData.data; %>
+            <% for (const course of context.courses || []) { %>
                 <div class="cell-md-3">
                     <%-include("partial/courseCard", Object.assign(context, {course: course}))%>
                 </div>

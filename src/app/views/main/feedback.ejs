@@ -1,0 +1,21 @@
+<%-include('partial/head')%>
+<%-include('partial/navbar')%>
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User Login</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const fb of context.feedback || []) { %>
+                <tr>
+                    <td><%=fb.userLoginId%></td>
+                    <td><%=fb.comments%></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>

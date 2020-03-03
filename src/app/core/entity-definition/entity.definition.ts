@@ -24,6 +24,9 @@ const EntityDefinitions: Array<EntityDefinition> = [{
         "name": "picture",
         "type": EntityEngine.DATA_TYPE.DESCRIPTION
     }, {
+        "name": "editor_mode",
+        "type": EntityEngine.DATA_TYPE.ID_LONG
+    }, {
         "name": "colour",
         "type": EntityEngine.DATA_TYPE.ID_LONG
     }]
@@ -204,6 +207,16 @@ const EntityDefinitions: Array<EntityDefinition> = [{
         },
         "onDelete": "restrict",
         "onUpdate": "restrict"
+    }]
+}, {
+    "name": "feedback",
+    "type": "TABLE",
+    "fields": [{
+        "name": "user_login_id",
+        "type": EntityEngine.DATA_TYPE.ID_LONG
+    }, {
+        "name": "comments",
+        "type": "VARCHAR(2001)"
     }]
 }]
 

@@ -4,9 +4,23 @@ import { DiscordAuth } from '../utils/auth/discord.auth';
 import { SecurityUtil } from '../utils/security.util';
 import { GoogleAuth } from '../utils/auth/google.auth';
 import { ExpressUtil } from '../utils/express.util';
+import { GenericValue } from '../../framework/core/engine/entity/generic.value';
 
 const loginController: Router = Router();
 const moduleName = "Controller.Login";
+const safeJSON = ExpressUtil.safeJSONMiddleware;
+
+loginController.post('/feedback', safeJSON(async (req: Request, res: Response) => {
+    if (req.body.comments && req.body.comments.length > 0 && req.body.comments.length <= 2000) {
+        const feedback = await new GenericValue("Feedback", {
+            "userLoginId": req.session ? (req.session.userLoginId || "not logged in") : "not logged in",
+            "comments": req.body.comments
+        }).insert();
+        res.json({ status: "ok" });
+    } else {
+        throw new Error("The comment length can only be between 1 and 2000 characters.");
+    }
+}));
 
 loginController.get('/login', (req: Request, res: Response) => {
     if (SecurityUtil.userLoggedIn(req)) {

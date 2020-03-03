@@ -6,7 +6,7 @@
 
     $(document).ready(() => {
         aceEditor = ace.edit($("#teacherIDE").get(0), {
-            mode: "ace/mode/javascript",
+            mode: "ace/mode/<%=course.editorMode%>",
             selectionStyle: "text",
             theme: "<%= session.theme == 'dark' ? 'ace/theme/monokai' : 'ace/theme/chrome' %>",
             showPrintMargin: false,
@@ -104,12 +104,13 @@
         });
     }
 
+    // applyDelta(de[0], de.slice(1))
     function applyDelta(current, deltas) {
-        aceEditor.getSession().getDocument().applyDelta(current.delta);
+        aceEditor.getSession().getDocument().applyDelta(current.d);
         if(deltas.length) {
             setTimeout(() => {
                 applyDelta(deltas[0], deltas.slice(1));
-            }, deltas[0].timestamp - current.timestamp)
+            }, deltas[0].t - current.t)
         }
     }
 

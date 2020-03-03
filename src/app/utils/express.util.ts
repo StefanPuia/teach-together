@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Screen } from '../core/screen';
-import BaseUtil from './base.util';
+import { BaseUtil } from './base.util';
 import { DebugUtil } from '../../framework/utils/debug.util';
 import { ExpressUtil as FrameworkExpressUtil } from '../../framework/utils/express.util';
 

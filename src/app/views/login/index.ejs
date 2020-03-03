@@ -1,5 +1,16 @@
 <%-include('partial/head')%>
 
+<style>
+.icon.mif-discord::before {
+    background-image: url(https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png);
+    background-size: 100% 100%;
+    content: "";
+    display: block;
+    height: 50px;
+    width: 50px;
+}
+</style>
+
 <div class="container">
     <div class="grid text-center">
         <div class="row">
@@ -15,11 +26,25 @@
             <%}%>
         </div>
         <div class="row">
-            <div class="cell-md-4 offset-md-4 offset-sm-1">
-                <div class="form-group">
-                    <a class="button primary" href="<%=urls.discord%>">Log in with Discord</a>
-                    <a class="button primary" href="<%=urls.google%>">Log in with Google</a>
-                    <a class="button primary" href="/framework/login?r=%2F">Log in with username and password</a>
+            <div class="cell-md-6 offset-md-3 offset-sm-1">
+                <h3>Log in with</h3>
+                <div class="tiles-grid">
+                    <a href="<%=urls.discord%>" data-role="tile" data-size="medium" class="bg-indigo fg-white">
+                        <span class="mif-discord icon"></span>
+                        <span class="branding-bar">Discord</span>
+                    </a>
+                    <a href="<%=urls.google%>" data-role="tile" data-size="medium" class="bg-cobalt fg-white">
+                        <span class="mif-google icon"></span>
+                        <span class="branding-bar">Google</span>
+                    </a>
+                    <a href="#" data-role="tile" data-size="medium" class="bg-black fg-white">
+                        <span class="mif-github icon"></span>
+                        <span class="branding-bar">GitHub</span>
+                    </a>
+                    <a href="/framework/login?r=%2F" data-role="tile" data-size="medium" class="bg-grayBlue fg-white">
+                        <span class="mif-key icon"></span>
+                        <span class="branding-bar">Password</span>
+                    </a>
                 </div>
             </div>
         </div>
