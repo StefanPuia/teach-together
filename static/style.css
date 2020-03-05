@@ -1,5 +1,6 @@
 :root {
     --appbar-height: 52px;
+    --sidebar-width: 52px;
     --ui-colour: #f8f8f8;
 }
 
@@ -69,6 +70,7 @@ body {
 
 #fullEditor {
     grid-area: fullEditor;
+    width: calc(100vw - var(--sidebar-width));
 }
 
 #fullEditor>div:first-child {
@@ -87,14 +89,36 @@ body {
     width: 100%;
 }
 
-.console {
-    font-family: monospace;
+#consoleWrapper {
     padding: 5px 20px;
     margin: 0;
     white-space: pre-wrap;
-    display: block;
+    font-family: monospace;
     height: 100%;
     width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+.console {
+    display: block;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.console table {
+    white-space: nowrap;
+}
+
+.console table th,
+.console table td {
+    border: solid 1px black;
+    padding: 5px;
 }
 
 .stroke {
@@ -102,4 +126,13 @@ body {
     -webkit-text-fill-color: white;
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
+}
+
+.icon.mif-discord::before {
+    background-image: url(https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png);
+    background-size: 100% 100%;
+    content: "";
+    display: block;
+    height: 50px;
+    width: 50px;
 }

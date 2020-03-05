@@ -11,10 +11,10 @@ function executeScript(text, output) {
                 code: text
             })
         }).then(data => {
-            output.text(data);
+            output.html(data);
             resolve(data);
         }).catch(err => {
-            output.text(err);
+            output.html(err);
             resolve(err);
         });
     });

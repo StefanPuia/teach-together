@@ -4,6 +4,7 @@ import sha256 from 'sha256';
 import { Request, Response } from 'express';
 import { Spawner } from './spawner';
 import { DebugUtil } from '../../framework/utils/debug.util';
+import { EntityEngine } from '../../framework/core/engine/entity/entity.engine';
 
 export default abstract class Executor {
     public static execute(engine: String, req: Request, res: Response) {
@@ -14,6 +15,10 @@ export default abstract class Executor {
             
             case "python3":
                 this.executePython(req, res);
+                break;
+
+            case "mysql":
+                this.executeMysql(req, res);
                 break;
         
             default:
@@ -39,6 +44,16 @@ export default abstract class Executor {
         this.handleProcess(spawner, req, res);
         spawner.onExit(() => {
             fs.unlinkSync(fileName);
+        })
+    }
+
+    public static executeMysql(req: Request, res: Response) {
+        const statement = ExecutorWrapper.mysql(req.body.code);
+        EntityEngine.execute(statement, [], false, false)
+        .then(result => {
+            res.send(ResultBuilder.mysql(result.slice().splice(1, result.length - 2)));
+        }).catch(err => {
+            res.send(err.sqlMessage || err);
         })
     }
 
@@ -69,5 +84,37 @@ class ExecutorWrapper {
                 console.log(err.message);
             }
         `;
+    }
+
+    public static mysql(code: string): string {
+        if (code.substr(-1) === ";") code = code.substr(0, code.length - 1);
+        return `start transaction; ${code};
+        rollback;`
+    }
+}
+
+class ResultBuilder {
+    public static mysql(results: any): string {
+        const tables: Array<string> = [];
+        for (const result of results) {
+            tables.push(this.buildMysqlTable(result));
+        }
+        return tables.join("<br>");
+    }
+
+    private static buildMysqlTable(resultBlock: any): string {
+        const headers = Object.keys(resultBlock[0]);
+        const rows: Array<any> = [];
+        for (const result of resultBlock) {
+            const row: Array<any> = [];
+            for (const h of headers) {
+                row.push(result[h] || "");
+            }
+            rows.push(`<td>${row.join("</td><td>")}</td>`);
+        }
+        return `<table>
+            <thead><tr><th>${headers.join("</th><th>")}</th></tr></thead>
+            <tbody><tr>${rows.join("</tr><tr>")}</tr></tbody>
+        </table>`;
     }
 }

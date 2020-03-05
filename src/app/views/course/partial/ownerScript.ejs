@@ -38,7 +38,7 @@
                 mac: "Command-Enter"
             },
             exec: () => {
-                executeScript(aceEditor.getValue(), $('#teacherConsole'))
+                executeScript(aceEditor.getValue(), $('#resultsConsole'))
                     .then((result) => {
                         sendWSMessage({
                             channel: "result",

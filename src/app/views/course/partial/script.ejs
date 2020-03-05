@@ -62,7 +62,7 @@
                 
                 case "result":
                     if (message.userLoginId != "<%=session.userLoginId%>") {
-                        $('#teacherConsole').text(message.result);
+                        $('#resultsConsole').html(message.result);
                     }
                     break;
 
