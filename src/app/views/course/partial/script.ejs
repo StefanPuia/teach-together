@@ -35,7 +35,7 @@
 
     function connectWS() {
         $("#courseChat input").attr("disabled", "disabled");
-        ws = new WebSocket("ws://<%=context.hostName%>/ws/course/<%=course.courseId%>");
+        ws = new WebSocket("<%=context.wsProtocol%>://<%=context.hostName%>/ws/course/<%=course.courseId%>");
 
         ws.addEventListener('open', () => {
             $("#courseChat input").removeAttr("disabled");

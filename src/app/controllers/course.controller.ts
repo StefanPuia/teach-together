@@ -7,6 +7,7 @@ import { EntityDynamicQuery } from '../../framework/core/engine/entity/entity.dy
 import { CourseWebsocketController } from './websocket/course.ws';
 import { ConditionBuilder } from '../../framework/core/engine/entity/condition.builder';
 import { EntityEngine } from '../../framework/core/engine/entity/entity.engine';
+import { BaseConfig } from '../../framework/config/base.config';
 
 const courseController: Router = Router();
 const safe = ExpressUtil.safeMiddleware;
@@ -129,6 +130,7 @@ courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
         ownerConnected: ownerConnected,
         editorValue: latest ? latest.get("editorValue") : "",
         userAvatar: user ? user.get("picture") : undefined,
+        wsProtocol: BaseConfig.sslConfig ? "wss" : "ws",
         chatLog: messages
     }).renderQuietly();
 }));
