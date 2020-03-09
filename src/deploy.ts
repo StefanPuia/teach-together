@@ -24,6 +24,7 @@ import { app } from './app/core/app';
 
 import * as fs from 'fs';
 import path from 'path';
+import https from 'https';
 
 LabelUtil.append(BaseLabels);
 ServiceEngine.append(ServiceLoadFramework);
@@ -41,8 +42,15 @@ DatabaseUtil.init(BaseConfig.database, BaseConfig.databaseFormatMode, entityDefi
     }
 });
 
-const server = app.listen(app.get('port'), () => {
+function startListeningCallback() {
     DebugUtil.logInfo(`App is running at http://localhost:${app.get('port')} in ${app.get('env')} mode`, 'Deploy');
-});
+}
+
+let server;
+if (BaseConfig.sslConfig) {
+    server = https.createServer(BaseConfig.sslConfig, app).listen(app.get('port'), startListeningCallback)
+} else {
+    server = app.listen(app.get('port'), startListeningCallback);
+}
 
 export default server;

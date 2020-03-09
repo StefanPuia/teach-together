@@ -4,6 +4,7 @@ src/app/config/custom.config.ts
 .vscode/
 spawner/
 build/
+*.pem
 
 # Logs
 logs
