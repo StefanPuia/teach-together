@@ -5,6 +5,7 @@ import { SecurityUtil } from '../utils/security.util';
 import { GoogleAuth } from '../utils/auth/google.auth';
 import { ExpressUtil } from '../utils/express.util';
 import { GenericValue } from '../../framework/core/engine/entity/generic.value';
+import { GithubAuth } from '../utils/auth/github.oauth';
 
 const loginController: Router = Router();
 const moduleName = "Controller.Login";
@@ -38,22 +39,26 @@ function handleSocialLoginError(req: Request, res: Response, err: any) {
     })
 }
 
+async function socialLogin(logInMethod: Function, req: Request, res: Response) {
+    try {
+        const user = await logInMethod(req);
+        await SecurityUtil.socialLogin(req, res, user);
+        res.redirect("/");
+    } catch (err) {
+        handleSocialLoginError(req, res, err)
+    }
+}
+
 loginController.get("/auth/discord", (req: Request, res: Response) => {
-    DiscordAuth.logIn(req)
-    .then(user => {
-        SecurityUtil.socialLogin(req, res, user).then(() => {
-            res.redirect("/");
-        }).catch(err => handleSocialLoginError(req, res, err));
-    }).catch(err => handleSocialLoginError(req, res, err));
+    socialLogin(DiscordAuth.logIn, req, res);
 });
 
 loginController.get("/auth/google", (req: Request, res: Response) => {
-    GoogleAuth.logIn(req)
-    .then(user => {
-        SecurityUtil.socialLogin(req, res, user).then(() => {
-            res.redirect("/");
-        }).catch(err => handleSocialLoginError(req, res, err));
-    }).catch(err => handleSocialLoginError(req, res, err));
+    socialLogin(GoogleAuth.logIn, req, res);
+});
+
+loginController.get("/auth/github", (req: Request, res: Response) => {
+    socialLogin(GithubAuth.logIn, req, res);
 });
 
 loginController.get('/logout', (req: Request, res: Response) => {
@@ -70,7 +75,8 @@ loginController.get('/logout', (req: Request, res: Response) => {
 function getAuthUrls(): GenericObject {
     return {
         discord: DiscordAuth.getAuthorizeURL(),
-        google: GoogleAuth.getAuthorizeURL()
+        google: GoogleAuth.getAuthorizeURL(),
+        github: GithubAuth.getAuthorizeURL()
     }
 }
 
