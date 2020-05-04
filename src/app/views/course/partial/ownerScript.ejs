@@ -3,7 +3,7 @@
     let deltas = [];
 
     function sendEditorData() {
-        if (!ownerConnected) {
+        if (!ownerConnected && !coursePublished) {
             sendWSMessage({
                 channel: "editor",
                 editor: aceEditor.getValue(),
@@ -14,7 +14,7 @@
     }
 
     $(document).ready(() => {
-        if (ownerConnected) {
+        if (ownerConnected || coursePublished) {
             aceEditor.setReadOnly(true);
         }
 
@@ -53,6 +53,22 @@
                 appendDeltas();
             }
         }, 5000);
+
+        $("#menuChatRemoveAll").on("click", () => {
+            callServer("/api/chat/<%=course.courseId%>", {
+                method: "DELETE"
+            }).then(() => {
+                $("#courseChat").data("chat").clear();
+            }).catch(alert);
+        });
+
+        $("#menuRecordingStop").on("click", () => {
+            callServer("/api/stoprecording/<%=course.courseId%>", {
+                method: "POST"
+            }).then(() => {
+                window.location.reload();
+            }).catch(alert);
+        });
     })
 
     function appendDeltas() {

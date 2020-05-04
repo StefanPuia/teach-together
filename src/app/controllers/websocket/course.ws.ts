@@ -8,6 +8,7 @@ import { EntityQuery } from '../../../framework/core/engine/entity/entity.query'
 import { ServiceUtil } from '../../../framework/utils/service.util';
 import { TypeEngine } from '../../../framework/core/engine/type.engine';
 import { ConditionBuilder } from '../../../framework/core/engine/entity/condition.builder';
+import { SecurityUtil } from '../../utils/security.util';
 
 export class CourseWebsocketController extends WSController {
     protected route: string = "/course/:courseId";
@@ -30,7 +31,7 @@ export class CourseWebsocketController extends WSController {
                 this.courses[courseId] = [];
             }
             const userLoginId = req.session!.userLoginId;
-            const isOwner = await CourseWebsocketController.isCourseOwner(courseId, userLoginId);
+            const isOwner = await SecurityUtil.isCourseOwner(courseId, userLoginId);
             const ownerConnected = await CourseWebsocketController.anotherOwnerConnected(courseId);
             this.courses[courseId].push({
                 ws: ws,
@@ -53,7 +54,7 @@ export class CourseWebsocketController extends WSController {
         try {
             let courseId = req.params.courseId;
             let message = JSON.parse(data.toString());
-            const isOwner = await CourseWebsocketController.isCourseOwner(courseId, message.userLoginId);
+            const isOwner = await SecurityUtil.isCourseOwner(courseId, message.userLoginId);
             switch (message.channel) {
                 case "chat":
                     message.text = message.text.replace(/</g, "&lt;");
@@ -83,7 +84,7 @@ export class CourseWebsocketController extends WSController {
         try {
             const courseId = req.params.courseId;
             const userLoginId = req.session!.userLoginId;
-            const isOwner = await CourseWebsocketController.isCourseOwner(courseId, userLoginId);
+            const isOwner = await SecurityUtil.isCourseOwner(courseId, userLoginId);
             const closedIndex = this.courses[courseId].findIndex(client => client.ws === ws);
             const nextOwner = await this.findOwnerConnected(courseId);
             this.courses[courseId].splice(closedIndex, 1);
@@ -137,19 +138,6 @@ export class CourseWebsocketController extends WSController {
     public static async anotherOwnerConnected(courseId: string) {
         const owner = await this.instance.findOwnerConnected(courseId);
         return !!owner
-    }
-
-    private static async isCourseOwner(courseId: string, userLoginId: string) {
-        try {
-            const result = await ServiceUtil.runSync("IsCourseOwner", {
-                userLoginId: TypeEngine.convert(userLoginId, "number"),
-                courseId: courseId
-            }, true, true);
-            return result.isOwner;
-        } catch (err) {
-            DebugUtil.logError(err, CourseWebsocketController.module);
-            return false;
-        }
     }
 
     private async sendOwnersListOfMembers(courseId: string) {

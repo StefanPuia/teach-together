@@ -101,26 +101,6 @@ courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
     const owners = await EntityQuery.from("CourseOwner").where({ "courseId": course.get("courseId") }).cache().queryList();
     const latest = await EntityQuery.from("CourseSnapshot").where({ "courseId": course.get("courseId") }).orderBy("-timestamp").queryFirst();
 
-    const chatLog = await EntityDynamicQuery.from("CL", "ChatLog")
-            .select("UL.fullName", "UL.userName", "UL.picture", "CL.*")
-            .innerJoin("UL", "UserLogin", "userLoginId", "CL.userLoginId")
-            .where({ "CL.courseId": course.get("courseId") })
-            .orderBy("CL.timestamp").queryList();
-    const messages: Array<GenericObject> = [];
-
-    for (const log of chatLog) {
-        messages.push({
-            id: log.get("id"),
-            name: log.get("fullName") || log.get("userName"),
-            avatar: log.get("picture"),
-            text: log.get("text"),
-            position: log.get("userLoginId") == req.session!.userLoginId ? "right" : "left",
-            time: log.get("timestamp"),
-            userLoginId: log.get("userLoginId"),
-            ownerMessage: !!owners.find(own => own.get("userLoginId") == log.get("userLoginId"))
-        });
-    }
-
     const ownerConnected = await CourseWebsocketController.anotherOwnerConnected(course.get("courseId"));
 
     Screen.create('course/index', req, res).appendContext({
@@ -131,7 +111,7 @@ courseController.get('/:courseId', safe(async (req: Request, res: Response) => {
         editorValue: latest ? latest.get("editorValue") : "",
         userAvatar: user ? user.get("picture") : undefined,
         wsProtocol: BaseConfig.sslConfig ? "wss" : "ws",
-        chatLog: messages
+        chatLog: []
     }).renderQuietly();
 }));
 

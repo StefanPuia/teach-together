@@ -3,6 +3,7 @@
     let ws;
     let unreadMessages = 0;
     let currentSideView;
+    const coursePublished = "<%=!!course.visibility%>" === "true";
 
     $(document).ready(() => {
         aceEditor = ace.edit($("#teacherIDE").get(0), {
@@ -12,16 +13,17 @@
             showPrintMargin: false,
             readOnly: "<%= context.isOwner %>" !== "true"
         })
-        aceEditor.setValue(`<%=context.editorValue || ''%>`);
-        const chatLog = JSON.parse(`<%-JSON.stringify(context.chatLog || [])%>`);
-        chatLog.forEach(cl => {
-            cl.time = new Date(cl.time);
-            cl.avatar = cl.avatar || defaultChatPicture;
-            $("#courseChat").data("chat").add(cl);
-            if (cl.ownerMessage) {
-                $("#" + cl.id).addClass("ownerMessage");
-            }
-        });
+        callServer("/api/chatlog/<%=course.courseId%>")
+        .then(data => {
+            data.chatLog.forEach(cl => {
+                cl.time = new Date(cl.time);
+                cl.avatar = cl.avatar || defaultChatPicture;
+                $("#courseChat").data("chat").add(cl);
+                if (cl.ownerMessage) {
+                    $("#" + cl.id).addClass("ownerMessage");
+                }
+            });
+        }).catch(alert);
 
         setInterval(() => {
             if (messageQueue.length) {
@@ -31,6 +33,26 @@
 
         connectWS();
         showSideMenu('#chatView');
+
+        if (coursePublished) {
+            setTimeout(() => {
+                callServer("/api/playback/<%=course.courseId%>")
+                .then(data => {
+                    const totalTime = data.snapshots.reduce((sum, a) => sum + a.q, 0);
+                    $("#playbackSlider").show();
+                    const startTime = new Date().getTime();
+                    setInterval(() => {
+                        const size = (new Date().getTime() - startTime) / totalTime;
+                        if (size <= 1) {
+                            $("#playbackSlider").css("width", `${size * 100}%`);
+                        }
+                    }, 25);
+                    applyDelta(data.snapshots[0], data.snapshots.slice(1));
+                }).catch(alert);
+            }, 500);
+        } else {
+            aceEditor.setValue(`<%=context.editorValue || ''%>`);
+        }
     });
 
     function connectWS() {
@@ -80,7 +102,7 @@
 
                 // <% if (context.isOwner) { %>
                     case "ownerDC":
-                        if (typeof ownerConnected !== "undefined") {
+                        if (typeof ownerConnected !== "undefined" && !coursePublished) {
                             ownerConnected = false;
                             aceEditor.setReadOnly(false);
                         }
@@ -110,7 +132,7 @@
         if(deltas.length) {
             setTimeout(() => {
                 applyDelta(deltas[0], deltas.slice(1));
-            }, deltas[0].t - current.t)
+            }, current.q)
         }
     }
 
